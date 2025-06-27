@@ -1,0 +1,1 @@
+## Thymeleaf .html 파일들을 저장하면 됩니다. (MVC에서 View라고 생각하면 됨)
