@@ -35,7 +35,7 @@ public class ReportDetailDto {
                 report.getUser().getUserId(),
                 report.getTitle(),
                 report.getVehicleNumber(),
-                report.getViolationType(),
+                report.getViolationType().name(),
                 report.getAddress(),
                 report.getLatitude(),
                 report.getLongitude(),

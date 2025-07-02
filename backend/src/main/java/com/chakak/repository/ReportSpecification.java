@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.chakak.common.enums.Violation;
 import com.chakak.domain.Report;
 
 
@@ -59,14 +60,11 @@ public class ReportSpecification {
 	}
 	
 	// 위반 유형 조회 코드 
-	public static Specification<Report> violationTypeEquals(String violationType) {
-		return (root , query , cb) -> {
-			if(violationType == null || violationType.isEmpty()) {
-				return null;
-			}
-			
-			return cb.equal(root.get("violationType"), violationType);
-		};
+	public static Specification<Report> violationTypeEquals(Violation violationType) {
+		return (root, query, cb) -> {
+	        if (violationType == null) return null;
+	        return cb.equal(root.get("violationType"), violationType);
+	    };
 		
 	}
 	

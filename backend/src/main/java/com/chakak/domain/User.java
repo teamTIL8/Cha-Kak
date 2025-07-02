@@ -2,6 +2,8 @@ package com.chakak.domain;
 
 import java.time.LocalDateTime;
 
+import com.chakak.common.constants.Role;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,10 +26,6 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role = Role.USER;
 	
-	public enum Role {
-		USER,
-		ADMIN
-	}
 	
 	private LocalDateTime createdAt = LocalDateTime.now();
 	private LocalDateTime updatedAt;
