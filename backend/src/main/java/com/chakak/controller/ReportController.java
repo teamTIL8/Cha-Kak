@@ -27,7 +27,7 @@ public class ReportController {
 	private final ReportImageService reportImageService;
 	
 	/**
-	 * 제안 신고 내역 저장
+	 * 제보 신청 내역 저장
 	 * */
 	@PostMapping
 	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto){
@@ -46,7 +46,7 @@ public class ReportController {
 	}
 	
 	/**
-	 * 제안 신고 내역(첨부 이미지) 저장 
+	 * 제보 신청 내역(첨부 이미지) 저장 
 	 * */
 	@PostMapping("/upload/{reportId}")
     public ResponseEntity<?> uploadFiles(@PathVariable Long reportId,

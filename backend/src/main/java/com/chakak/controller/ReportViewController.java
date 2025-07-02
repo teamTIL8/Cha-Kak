@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.chakak.common.enums.Violation;
 import com.chakak.domain.Report;
+import com.chakak.domain.ReportImage;
 import com.chakak.dto.response.ReportResponse;
 import com.chakak.service.ReportService;
 
@@ -87,7 +88,12 @@ public class ReportViewController {
 															 report.getLongitude(),
 															 report.getDescription());
 		
+		
+		List<ReportImage> reportImages = report.getReportImages();
+		
 		model.addAttribute("report", reportResponse);
+		model.addAttribute("reportImages", reportImages);
+		
 		return "report/report-detail";
 	}
 	

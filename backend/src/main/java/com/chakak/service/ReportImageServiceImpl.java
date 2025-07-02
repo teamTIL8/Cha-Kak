@@ -27,12 +27,12 @@ public class ReportImageServiceImpl implements ReportImageService{
 	
 	@Override
 	public void save(Long reportId, List<MultipartFile> files) {
-		//final String uploadDir = "C:/upload/";
+		final String uploadDir = "C:/upload/";
 		
 		Report report = reportRepository.findById(reportId).orElseThrow();
 		
         String today = LocalDate.now().toString();
-        String savePath = today;
+        String savePath = uploadDir + today;
 
         try {
 			Files.createDirectories(Paths.get(savePath));
@@ -53,7 +53,7 @@ public class ReportImageServiceImpl implements ReportImageService{
 			}
 
             ReportImage image = new ReportImage();
-            image.setImgPath(filePath.toString());
+            image.setImgPath(filePath.toString().replaceAll("\\\\", "/").replaceAll(uploadDir, ""));
             image.setReport(report);
 
             repository.save(image);
