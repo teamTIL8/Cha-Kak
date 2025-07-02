@@ -5,13 +5,19 @@
 	<style>
 		* {margin:0px; padding:0px;}
 		h5 {margin:2px;}
-		.wrapper{width:1280px;height:800px;}
+		.wrapper{width:1280px;height:800px; overflow: scroll;}
 		.sidebar{width:200px;height:800px;border-right:1px solid black;float:left;padding:10px;}
 		.content{width:auto;height:800px;float:left;padding:10px;}
 		.clear{clear:both;}
 		.menu{margin:8px;}
 		.menu li{list-style-type: none; cursor: pointer;}
+		#map{margin-top: 10px;margin-bottom: 40px;}
+		#description{width:300px;height:100px;}
+		.container{margin-bottom:10px;}
 	</style>
+	
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=29e2323817a7ca27a52dfbad0ed70431&libraries=services,clusterer,drawing"></script>
 </head>
 <body>
 	<div class="wrapper">
@@ -33,58 +39,73 @@
 			</div>
 		</div>
 		<div class="content">
-			<form action="/report">
-				<h1>
-					<b>신고 상세 내용</b>
-				</h1>
-				<h5>불법 주정차의 상세 신고 내용 조회 </h5>
+			<h1>
+				<b>제보 상세 내용</b>
+			</h1>
+			<h5>불법 주정차의 상세 신고 내용 조회 </h5>
+			
+			<hr>
+			
+			<h5 style="display: inline;">제목 : </h5>
+			<span th:text="${report.title}"></span>
+			<br>
+			
+			<h5 style="display: inline;">위반 유형 : </h5>
+			<span th:text="${report.violationType}"></span>
+			<br>
+			
+			<h5 style="display: inline;">상세 신고 내용 : </h5>
+			<span th:text="${report.description}"></span>
+			<br>
+			
+			<h5 style="display: inline;">차량 번호 : </h5>
+			<span th:text="${report.vehicleNumber}"></span>
+			<br>
+
+			<h5 style="display: inline;">작성자 : </h5>
+			<span th:text="${report.userId}"></span>
+			<br>
+			
+			<h5 style="display: inline;"> 위반 지역 : </h5>
+			<input type="text" th:value="${report.address}" readonly />
+			<input type="hidden" th:value="${report.latitude}"/> <!-- 위도 -->
+			<input type="hidden" th:value="${report.longitude}"/> <!-- 경도 -->
+			
+			<!-- 지도-->
+			<div id="map" style="width:800px;height:600px;"></div>
+			
+			
+			<h5>위반 사진</h5>
+			<div class="container">
 				
-				<hr>
-				
-				<h5>제목</h5>
-				<input type="text" />
-				
-				<h5>위반 유형</h5>
-				<select>
-					<option>어린이 보호 구역</option>
-				</select>
-				
-				<h5>상세 신고 내용</h5>
-				<textarea></textarea>
-				
-				<h5>위반 지역</h5>
-				<select>
-					<option>서울시</option>
-				</select>
-				
-				<h5>위반 지역</h5>
-				<button>위치 찾기</button>
-				<input type="text" value="서울특별시 송파구 석촌동 192" readonly />
-				<div style="width:500px;height:400px;border: 1px solid black;"></div>
-				<input type="hidden" name="" /> <!-- 위도 -->
-				<input type="hidden" name="" /> <!-- 경도 -->
-				
-				<h5>위반 사진</h5>
-				<input type="file" />
-				
-				<h5>위반 일자</h5>
-				<input type="date" />
-				
-				<div>
-					<h5>위반 시각</h5>
-					<select>
-						<option>01</option>
-						<option>02</option>
-					</select> :
-					<select>
-						<option>01</option>
-					</select>
-				</div>
-				
-				<button type="button" style="width:200px;">신청</button>
 			</div>
-			<div class="clear"></div>
-		</form>
+			
+			<h5>위반 일자</h5>
+			<div class="container">
+				<span th:text="${#temporals.format(report.reportTime, 'yyyy-MM-dd HH:mm')}"></span>
+			</div>
+		</div>
+		<div class="clear"></div>
 	</div>
-</body>	
+</body>
+<script th:inline="javascript">
+	var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+	
+	let latitude = /*[[${report.latitude}]]*/ 0;
+    let longitude = /*[[${report.longitude}]]*/ 0;
+	
+	var options = { //지도를 생성할 때 필요한 기본 옵션
+		center: new kakao.maps.LatLng(latitude, longitude),
+		level: 3 //지도의 레벨(확대, 축소 정도)
+	};
+
+	var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+	
+    var geocoder = new kakao.maps.services.Geocoder();
+    var marker = new kakao.maps.Marker({
+        map: map,
+        position: map.getCenter()
+    });
+	
+</script>	
 </html>

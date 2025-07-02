@@ -97,10 +97,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="report, stat : ${reportList}">
+					<tr th:each="report, stat : ${reportList}" 					
+						  th:onclick="|location.href='/report/${report.reportId}'|"
+					      style="cursor:pointer;">
 			            <td th:text="${stat.count}">1</td> <!-- 순번 -->
 			            <td th:text="${report.title}">제목</td>
-			            <td th:text="${report.violationType}">위반유형</td>
+			            <td th:text="${report.violationType.label}">위반유형</td>
 			            <td th:text="${report.address}">지역</td>
 			            <td th:text="${#temporals.format(report.reportTime, 'yyyy-MM-dd HH:mm')}">날짜</td>
 			        </tr>

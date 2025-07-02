@@ -27,12 +27,12 @@ public class ReportImageServiceImpl implements ReportImageService{
 	
 	@Override
 	public void save(Long reportId, List<MultipartFile> files) {
-		final String uploadDir = "C:/upload/";
+		//final String uploadDir = "C:/upload/";
 		
 		Report report = reportRepository.findById(reportId).orElseThrow();
 		
         String today = LocalDate.now().toString();
-        String savePath = uploadDir + today;
+        String savePath = today;
 
         try {
 			Files.createDirectories(Paths.get(savePath));

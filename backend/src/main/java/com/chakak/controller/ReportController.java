@@ -26,6 +26,9 @@ public class ReportController {
 	private final ReportService service;
 	private final ReportImageService reportImageService;
 	
+	/**
+	 * 제안 신고 내역 저장
+	 * */
 	@PostMapping
 	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto){
 		Report report = new Report();
@@ -42,7 +45,9 @@ public class ReportController {
 		return ResponseEntity.ok(savedReport.getReportId());
 	}
 	
-	
+	/**
+	 * 제안 신고 내역(첨부 이미지) 저장 
+	 * */
 	@PostMapping("/upload/{reportId}")
     public ResponseEntity<?> uploadFiles(@PathVariable Long reportId,
                                          @RequestParam("files") List<MultipartFile> files) {

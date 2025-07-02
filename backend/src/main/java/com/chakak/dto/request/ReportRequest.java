@@ -2,6 +2,8 @@ package com.chakak.dto.request;
 
 import java.time.LocalDateTime;
 
+import com.chakak.common.enums.Violation;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -24,7 +26,7 @@ public class ReportRequest {
 	private LocalDateTime reportTime;
 	
 	@NotBlank(message = "위반 유형은 필수입니다.")
-	private String violationType;
+	private Violation violationType;
 	
 	@NotBlank(message = "주소는 필수입니다.")
 	private String address; //지도상 주소
