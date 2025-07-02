@@ -5,9 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chakak.domain.User;
 import com.chakak.dto.ReportDto;
 import com.chakak.service.ReactionService;
 
@@ -30,6 +34,29 @@ public class ReactionController {
 	public ResponseEntity<List<ReportDto>> getDislikedReprots() {
 		String userId = "jiwoo03";
 		return ResponseEntity.ok(reactionService.getReactionsByType(userId, "DISLIKE"));
+		
 	}
-
+	
+	/////////////////////////////////////////
+	// 좋아요 또는 싫어요 등록 / 취소 (toggle)
+	@PostMapping("/reactions/{reportId}")
+	public ResponseEntity<String> toggleReaction (@PathVariable Long reportId, @RequestParam String reactionType)
+	{
+		User user = new User();
+		user.setUserId("jiwoo03");
+		
+		reactionService.toggleReaction(reportId, user, reactionType);
+		return ResponseEntity.ok("반응이 처리되었습니다.");
+	
+	}
+	
+	//좋아요 또는 싫어요 개수 
+	 @GetMapping("/reactions/{reportId}/count")
+	    public ResponseEntity<Long> countReaction(
+	            @PathVariable Long reportId,
+	            @RequestParam String reactionType
+	    ) {
+	        long count = reactionService.countReaction(reportId, reactionType);
+	        return ResponseEntity.ok(count);
+	    }
 }
