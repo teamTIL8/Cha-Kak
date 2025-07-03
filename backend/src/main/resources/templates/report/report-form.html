@@ -72,7 +72,7 @@
 				<input type="hidden" id="latitude" name="latitude" /> <!-- 위도 -->
 				<input type="hidden" id="longitude" name="longitude" /> <!-- 경도 -->
 				
-				<!--네이버 지도-->
+				<!-- 지도-->
 				<div id="map" style="width:800px;height:600px;"></div>
 				
 				<h5>위반 사진</h5>
@@ -177,7 +177,7 @@
 			        const img = document.createElement('img');
 			        img.src = e.target.result;
 					img.style.width = "400px";
-					img.style.height = "400px";	 
+					img.style.height = "auto";	 
 			        previewContainer.appendChild(img);
 				};
 				
@@ -194,7 +194,7 @@
 		}
 		
 		const data = {
-			userId : 'tester',
+			userId : 'test1234',
 	        title: document.getElementById('title').value,
 	        description: document.getElementById('description').value,
 	        vehicleNumber: document.getElementById('vehicleNumber').value,
@@ -227,6 +227,8 @@
 	    });
 
 	    alert('제보가 완료되었습니다.');
+		
+		window.location.href='/report/list';
 	}
 	
 	// 유효성 검사
