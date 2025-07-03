@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>홈 페이지</title>
+	<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+	<div class="container">
+		<h1>환영합니다! <span sec:authentication="name"></span>님!</h1>
+		<p>로그인에 성공하셨습니다.</p>
+		<p>당신의 역할: <span sec:authentication="principal.authorities"></span></p>
+
+		<div sec:authorize="isAuthenticated()">
+			<a href="/mypage" class="button">마이페이지</a>
+		</div>
+
+		<form action="/logout" method="post">
+			<button type="submit" class="button">로그아웃</button>
+		</form>
+	</div>
+</body>
+
+</html>

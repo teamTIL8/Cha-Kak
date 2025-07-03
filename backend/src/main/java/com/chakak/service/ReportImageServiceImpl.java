@@ -53,7 +53,7 @@ public class ReportImageServiceImpl implements ReportImageService{
 			}
 
             ReportImage image = new ReportImage();
-            image.setImgPath(filePath.toString());
+            image.setImgPath(filePath.toString().replaceAll("\\\\", "/").replaceAll(uploadDir, ""));
             image.setReport(report);
 
             repository.save(image);

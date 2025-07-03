@@ -9,4 +9,7 @@ public interface ReportService {
 	public Report save(Report report);
 
 	public List<Report> findAll();
+
+	public Report findById(Long reportId);
+	
 }

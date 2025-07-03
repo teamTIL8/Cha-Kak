@@ -36,4 +36,9 @@ public class ReportServiceImpl implements ReportService{
 		return repository.findAll();
 	}
 
+	@Override
+	public Report findById(Long reportId) {
+		return repository.findById(reportId).orElse(null);
+	}
+
 }
