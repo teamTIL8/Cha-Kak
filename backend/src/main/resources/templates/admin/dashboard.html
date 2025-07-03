@@ -49,9 +49,9 @@
             <th>주소</th>
             <th>제보 수</th>
         </tr>
-        <tr th:each="a, stat : ${addressStats}">
+        <tr th:each="a, stat : ${locationStats}">
             <td th:text="${stat.index + 1}">1</td>
-            <td th:text="${a.address}">서울시 강남구</td>
+            <td th:text="${a.location}">서울시 강남구</td>
             <td th:text="${a.count}">7</td>
         </tr>
     </table>
