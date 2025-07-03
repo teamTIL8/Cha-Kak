@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>회원 목록</title></head>
+<body>
+<h2>회원 관리</h2>
+<table border="1">
+	
+  <tr>
+    <th>ID</th><th>이름</th><th>이메일</th><th>가입일</th><th>신고 목록 보기</th></ht><th>관리</th>
+  </tr>
+  <tr th:each="user : ${users}">
+    <td th:text="${user.userId}">id</td>
+    <td th:text="${user.name}">이름</td>
+    <td th:text="${user.email}">이메일</td>
+    <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}">가입일</td>
+	<td>
+	  <a th:href="@{/admin/users/{id}/reports(id=${user.userId})}" th:text="${user.reportCount}">0</a>
+	</td>
+    <td>
+      <form th:action="@{/admin/users/{id}/delete(id=${user.userId})}" method="post"
+            onsubmit="return confirm('정말 탈퇴 처리할까요?');">
+        <button type="submit">강제 탈퇴</button>
+      </form>
+    </td>
+  </tr>
+</table>
+<p><a th:href="@{/admin/dashboard}">▶ 메인으로</a></p>
+</body>
+</html>
