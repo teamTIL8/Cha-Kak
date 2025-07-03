@@ -5,13 +5,19 @@
 	<style>
 		* {margin:0px; padding:0px;}
 		h5 {margin:2px;}
-		.wrapper{width:1280px;height:800px;}
+		.wrapper{width:1280px;height:800px; overflow: scroll;}
 		.sidebar{width:200px;height:800px;border-right:1px solid black;float:left;padding:10px;}
 		.content{width:auto;height:800px;float:left;padding:10px;}
 		.clear{clear:both;}
 		.menu{margin:8px;}
 		.menu li{list-style-type: none; cursor: pointer;}
+		#map{margin-top: 10px;margin-bottom: 40px;}
+		#description{width:300px;height:100px;}
+		.container{margin-bottom:10px;}
 	</style>
+	
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=29e2323817a7ca27a52dfbad0ed70431&libraries=services,clusterer,drawing"></script>
 </head>
 <body>
 	<div class="wrapper">
@@ -33,47 +39,260 @@
 			</div>
 		</div>
 		<div class="content">
-			<form action="/report">
+			<!-- 수정할 때는 반드시 PUT 또는 POST 사용 -->
+			<form th:action="@{/report/update}" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="reportId" th:value="${report.reportId}" />
 				<h1>
-					<b>신고 수정 하기</b>
+					<b>제보 수정 하기</b>
 				</h1>
-				<h5>불법 주정차 차량의 신고 정보 수정</h5>
+				<h5>불법 주정차 제보 정보 수정</h5>
 				
 				<hr>
 				
 				<h5>제목</h5>
-				<input type="text" />
+				<input type="text" id="title" name="title" th:value="${report.title}" />
 				
 				<h5>위반 유형</h5>
-				<select>
-					<option>어린이 보호 구역</option>
+				<select id="violationType" name="violationType">
+					<option 
+					       th:each="type : ${violationTypeList}" 
+					       th:value="${type.name}" 
+					       th:text="${type.label}"
+						   th:selected="${report.violationType == type.name}">
+					</option>
 				</select>
 				
+				<h5>차량 번호</h5>
+				<input type="text" id="vehicleNumber" name="vehicleNumber" th:value="${report.vehicleNumber}"/>
+								
 				<h5>상세 신고 내용</h5>
-				<textarea></textarea>
+				<textarea id="description" name="description" th:text="${report.description}"></textarea>
 				
 				<h5>위반 지역</h5>
-				<select>
-					<option>서울시</option>
-				</select>
+				<input type="text" id="address" name="address" th:value="${report.address}"/>
+				<button type="button" id="submit" onclick="searchAddress();">검색</button>
+				<input type="hidden" id="latitude" name="latitude" th:value="${report.latitude}" /> <!-- 위도 -->
+				<input type="hidden" id="longitude" name="longitude" th:value="${report.longitude}" /> <!-- 경도 -->
 				
-				<h5>위반 지역</h5>
-				<button>위치 찾기</button>
-				<input type="text" value="서울특별시 송파구 석촌동 192" readonly />
-				<div style="width:500px;height:400px;border: 1px solid black;"></div>
-				<input type="hidden" name="" /> <!-- 위도 -->
-				<input type="hidden" name="" /> <!-- 경도 -->
+				<!-- 지도-->
+				<div id="map" style="width:800px;height:600px;"></div>
 				
 				<h5>위반 사진</h5>
-				<input type="file" />
+				<input type="file" id="vaildImage" name="vaildImage" accept="image/*" multiple />
+				<div class="preview" id="previewContainer">
+					<div th:each="image : ${reportImages}" style="margin-top: 10px;">
+						<img th:src="@{'/images/' + ${image.imgPath}}" style="width: 200px; height: auto; margin-right: 10px;" />
+					</div>
+				</div>
 				
-				<h5>위반 일자</h5>
-				<input type="date" />
-				
-				<button type="button" style="width:200px;">신청</button>
-			</div>
-			<div class="clear"></div>
-		</form>
+				<button id="edit-btn" type="button" style="width:200px;" onclick="editReport();">수정하기</button>
+			</form>
+		</div>
+		<div class="clear"></div>
 	</div>
-</body>	
+</body>
+<script th:inline="javascript">
+	var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+	
+	let latitude = /*[[${report.latitude}]]*/ 0;
+    let longitude = /*[[${report.longitude}]]*/ 0;
+	
+	var options = { //지도를 생성할 때 필요한 기본 옵션
+		center: new kakao.maps.LatLng(latitude, longitude), //지도의 중심좌표.
+		level: 3 //지도의 레벨(확대, 축소 정도)
+	};
+
+	var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+	
+    var geocoder = new kakao.maps.services.Geocoder();
+    var marker = new kakao.maps.Marker({
+        map: map,
+        position: map.getCenter()
+    });
+
+	
+	var addressEle = document.getElementById("address");
+	
+	addressEle.addEventListener("keydown", function (event) {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			searchAddress();   // 원하는 함수 실행
+		}
+	});
+	
+	// 위치 검색
+    function searchAddress() {
+        var address = document.getElementById('address').value;
+
+        if (!address) {
+            alert('주소를 입력하세요!');
+            return;
+        }
+
+        geocoder.addressSearch(address, function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                // 지도 중심 이동
+                map.setCenter(coords);
+
+                // 마커 이동
+                marker.setPosition(coords);
+				
+				document.getElementById("latitude").value = result[0].y;
+				document.getElementById("longitude").value = result[0].x;
+            } else {
+                alert('주소를 찾을 수 없습니다.');
+            }
+        });
+    }
+	
+	// 지도 클릭 이벤트 등록
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+        var latlng = mouseEvent.latLng;
+
+        // 클릭한 좌표로 주소 요청
+        geocoder.coord2Address(latlng.getLng(), latlng.getLat(), function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                var detailAddr = !!result[0].road_address ? result[0].road_address.address_name : result[0].address.address_name;
+
+                // input에 주소 표시
+                document.getElementById('address').value = detailAddr;
+
+                // 마커 이동
+                marker.setPosition(latlng);
+				
+				document.getElementById("latitude").value = latlng.getLat();
+				document.getElementById("longitude").value = latlng.getLng();
+				
+            }
+        });
+    });
+	
+	// 이미지 업로드
+	document.getElementById('vaildImage').addEventListener('change', function(event) {
+		const files = event.target.files;
+		const previewContainer = document.getElementById('previewContainer');
+		
+		// 기존 미리보기 초기화
+		previewContainer.innerHTML = '';
+		
+		Array.from(files).forEach(file => {
+			if (file.type.startsWith('image/')) {
+				const reader = new FileReader();
+				
+				reader.onload = function(e) {
+			        const img = document.createElement('img');
+			        img.src = e.target.result;
+					img.style.width = "400px";
+					img.style.height = "auto";	 
+			        previewContainer.appendChild(img);
+				};
+				
+				reader.readAsDataURL(file);
+			}
+		});
+    });
+	
+	//수정하기
+	async function editReport() { 
+
+		if(!validateRequest()){
+			return false;
+		}
+		
+		const data = {
+			userId : 'test1234',
+	        title: document.getElementById('title').value,
+	        description: document.getElementById('description').value,
+	        vehicleNumber: document.getElementById('vehicleNumber').value,
+	        violationType: document.getElementById('violationType').value,
+	        address: document.getElementById('address').value,
+	        latitude: parseFloat(document.getElementById('latitude').value),
+	        longitude: parseFloat(document.getElementById('longitude').value)
+	    };
+		
+		const reportId = /*[[${report.reportId}]]*/ null;
+		
+		// 1. 신고 데이터 저장
+	    const response = await fetch('/api/reports/' + reportId, {
+	        method: 'PUT',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify(data)
+	    });
+
+		// 2. 파일 업로드
+		const filesInput = document.getElementById('vaildImage');
+	    const formData = new FormData();
+
+	    for (let file of filesInput.files) {
+	        formData.append('files', file);
+	    }
+
+	    await fetch('/api/reports/upload/' + reportId, {
+	        method: 'POST',
+	        body: formData
+	    });
+
+	    alert('수정이 완료되었습니다.');
+		
+		window.location.href='/report/list';
+	}
+	
+	// 유효성 검사
+	function validateRequest(){
+		//제목
+		const title = document.getElementById("title").value;
+		//위반 유형
+		const violationType = document.getElementById("violationType").value;
+		//차량 번호
+		const vehicleNumber = document.getElementById("vehicleNumber").value;
+		//상세 내용
+		const description = document.getElementById("description").value;
+		//위반 지역
+		const address = document.getElementById("address").value;
+		//위반 사진
+		const vaildImage = document.getElementById("vaildImage").value;
+		
+		if (!title) {
+		    alert("제목을 입력하세요.");
+		    document.getElementById("title").focus();
+		    return false;
+		}
+
+		if (!violationType) {
+		    alert("위반 유형을 선택하세요.");
+		    document.getElementById("violationType").focus();
+		    return false;
+		}
+		
+		if (!vehicleNumber) {
+		    alert("차량 번호를 입력하세요.");
+		    document.getElementById("vehicleNumber").focus();
+		    return false;
+		}
+
+		if (!description) {
+		    alert("상세 내용을 입력하세요.");
+		    document.getElementById("description").focus();
+		    return false;
+		}
+
+		if (!address) {
+		    alert("위반 지역(주소)을 입력하세요.");
+		    document.getElementById("address").focus();
+		    return false;
+		}
+
+		/*
+		if (!vaildImage) {
+		    alert("위반 사진을 첨부하세요.");
+		    document.getElementById("vaildImage").focus();
+		    return false;
+		}
+		*/
+		
+		return true;
+	}	
+</script>
 </html>
