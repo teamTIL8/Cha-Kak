@@ -1,5 +1,3 @@
-package com.chakak.domain;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,11 +10,15 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
-
+import lombok.Builder;
+import lombok.Data;
+  
 @Entity
 @Table(name = User.TABLE_NAME)
+@Builder // 필요 시 생성자 대신 빌더 사용
 @Getter
 @NoArgsConstructor
+@Data
 @SQLDelete(sql = "UPDATE User SET is_deleted = true, deleted_at = NOW() WHERE user_id = ?")
 @Where(clause = "is_deleted = false")
 public class User {
