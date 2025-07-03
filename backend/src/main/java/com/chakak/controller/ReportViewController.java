@@ -19,7 +19,7 @@ public class ReportViewController {
 	private final ReportService service;
 	
 	/**
-	 * 불
+	 * 불법 주정차 제보글 목록
 	 * */
 	@GetMapping("/report/list")
 	public String listReports(Model model) {

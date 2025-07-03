@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>회원 신고 이력</title></head>
+<body>
+<h2 th:text="'회원 ' + ${userId} + '님의 신고글 목록'">회원 신고글</h2>
+<table border="1">
+  <tr>
+    <th>ID</th><th>제목</th><th>차량번호</th><th>작성일시</th><th>주소</th><th>조회수</th>
+  </tr>
+  <tr th:each="report : ${reports}">
+    <td th:text="${report.reportId}">1</td>
+    <td th:text="${report.title}">제목</td>
+    <td th:text="${report.vehicleNumber}">12가1234</td>
+    <td th:text="${#temporals.format(report.reportTime, 'yyyy-MM-dd')}">날짜</td>
+    <td th:text="${report.address}">주소</td>
+    <td th:text="${report.viewCount}">0</td>
+  </tr>
+</table>
+<p><a th:href="@{/admin/users}">← 회원 목록으로 돌아가기</a></p>
+</body>
+</html>

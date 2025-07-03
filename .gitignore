@@ -1,0 +1,40 @@
+# Java build
+/out/
+/target/
+
+# IDE
+/.idea/
+/*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Eclipse/STS 관련
+.classpath
+.project
+.settings/
+.factorypath
+
+# Env config 
+application.yml
+application.yaml
+application.properties
+application-*.yml
+application-*.properties
+
+# 환경 예시 파일은 Git에 포함 가능
+!application.yml.example
+!application.properties.example
+
+# Uploaded files
+/uploads/
+/static/upload/
+
+# Temp files
+*.swp
+*.bak
+*.tmp
