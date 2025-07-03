@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chakak.domain.User;
 import com.chakak.dto.ReportDto;
-import com.chakak.repository.CustomUserDetails;
+import com.chakak.service.CustomUserDetails;
 import com.chakak.service.ReactionService;
 
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 public class ReactionController {
 	
 	@Autowired

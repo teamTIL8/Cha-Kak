@@ -25,7 +25,7 @@ public class ReportDetailDto {
     private Double latitude;
     private Double longitude;
     private String description;
-    private int viewCnt;
+    private Long viewCnt;
     private LocalDateTime reportTime;
     private LocalDateTime createdAt;
 
@@ -40,7 +40,7 @@ public class ReportDetailDto {
                 report.getLatitude(),
                 report.getLongitude(),
                 report.getDescription(),
-                report.getViewCnt(),
+                report.getViewCount(),
                 report.getReportTime(),
                 report.getCreatedAt()
         );

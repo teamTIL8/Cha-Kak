@@ -9,32 +9,63 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
-//import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.chakak.domain.Report;
 import com.chakak.dto.ReportDto;
-import com.chakak.repository.CustomUserDetails;
+import com.chakak.dto.request.ReportRequest;
+import com.chakak.service.CustomUserDetails;
+import com.chakak.service.ReportImageService;
 import com.chakak.service.ReportService;
-
-//import com.streetcheck.CustomUserDetails;
-
-//import com.streetcheck.dto.ReportDetailDto;
-
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequiredArgsConstructor
+@RequestMapping("/api/report")
 public class ReportController {
-	@Autowired
-	private ReportService reportService;
 	
-	// 전체 신고 목록 조회 or 필터링 조회 ( 차량 번호 , 위치 , 상태 , 글 쓴 날짜 , 기간 ( startDate , endDate) , 키워드 )
-	@GetMapping("/reports")
+	private final ReportService reportService;
+	private final ReportImageService reportImageService;
+	
+	// ✅ 제보 신청 내역 저장 
+	@PostMapping
+	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto){
+		Report report = new Report();
+		report.setTitle(reportDto.getTitle());
+		report.setUserId(reportDto.getUserId());
+		report.setViolationType(reportDto.getViolationType());
+		report.setVehicleNumber(reportDto.getVehicleNumber());
+		report.setDescription(reportDto.getDescription());
+		report.setAddress(reportDto.getAddress());
+		report.setLatitude(reportDto.getLatitude());
+		report.setLongitude(reportDto.getLongitude());
+		
+		Report savedReport = reportService.save(report);
+		return ResponseEntity.ok(savedReport.getReportId());
+	}
+	
+	
+	// ✅ 제보 신청 내역(첨부 이미지) 저장 
+	@PostMapping("/upload/{reportId}")
+    public ResponseEntity<?> uploadFiles(@PathVariable Long reportId,
+                                         @RequestParam("files") List<MultipartFile> files) {
+
+		reportImageService.save(reportId, files);
+		
+        return ResponseEntity.ok("Files Uploaded");
+    }
+	
+	
+	
+	// ✅ 전체 신고 목록 조회 or 필터링 조회 ( 차량 번호 , 위치 , 상태 , 글 쓴 날짜 , 기간 ( startDate , endDate) , 키워드 )
+	@GetMapping
 	public ResponseEntity<Page<ReportDto>> getAllReports(
 			// required = false는 뒤에 쿼리 파라미터가 안 붙이면 전체 목록 조회 , 붙이면 해당 파라미터 조회를 의미하는 것임
 	    @RequestParam(required = false) String carNumber, // RequestParam 이므로 ?로 붙이는 쿼리 파라미터임 
@@ -56,8 +87,8 @@ public class ReportController {
 	}
 	
 	
-	
-	 @GetMapping("/users/me/reports")
+	// ✅ 내 신고글 목록 조회하기 
+	 @GetMapping("/my")
 	    public ResponseEntity<List<ReportDto>> getMyReports(@AuthenticationPrincipal UserDetails userDetails) {
 	        String userId = userDetails.getUsername();
 	        List<ReportDto> reports = reportService.getMyReports(userId);
@@ -65,11 +96,10 @@ public class ReportController {
 	    }
 	
 	
-	// 상세 조회 ( 조회수 증가 ) 
-	 @GetMapping("/reports/{id}")
+	// ✅ 상세 조회 ( 조회수 증가 ) 
+	 @GetMapping("/{id}")
 	    public ResponseEntity<ReportDto> getDetail(@PathVariable Long id) {
 		    ReportDto report = reportService.getReport(id);
 	        return ResponseEntity.ok(report);
 	    }
-
 }

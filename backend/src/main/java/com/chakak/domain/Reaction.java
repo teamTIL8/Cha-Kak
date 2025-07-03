@@ -20,19 +20,17 @@ import lombok.NoArgsConstructor;
 public class Reaction {
 	
 	@Id
-	@GeneratedValue( strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long reactionId;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="REPORT_ID")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "REPORT_ID")  // 대문자 맞춤
 	private Report report;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="USER_ID" )
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "USER_ID")    // 대문자 맞춤
 	private User user;
 	
-	private String reactionType; // 좋아요 , 싫어요 타입 유형
-	private LocalDateTime createdAt= LocalDateTime.now();
-	
-
+	private String reactionType; // 좋아요, 싫어요 타입
+	private LocalDateTime createdAt = LocalDateTime.now();
 }

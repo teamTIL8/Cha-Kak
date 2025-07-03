@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chakak.dto.CommentDto;
-import com.chakak.repository.CustomUserDetails;
 import com.chakak.service.CommentService;
+import com.chakak.service.CustomUserDetails;
 
 
 

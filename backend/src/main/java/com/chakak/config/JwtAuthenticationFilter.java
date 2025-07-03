@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider; 
 
 	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
-	                               UserDetailsService userDetailsService) {
+			@Qualifier("customUserDetailsService")UserDetailsService userDetailsService) {
 	    this.jwtTokenProvider = jwtTokenProvider;
 	    this.userDetailsService = userDetailsService;
 	}

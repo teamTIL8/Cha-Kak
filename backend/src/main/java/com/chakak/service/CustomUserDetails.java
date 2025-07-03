@@ -1,22 +1,20 @@
-package com.chakak.repository; // 패키지 변경
+package com.chakak.service;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.chakak.domain.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.chakak.domain.User; // User 엔티티 경로에 맞게 수정
-
-import lombok.Getter; // lombok 사용 시
+import java.util.Collection;
+import java.util.List;
 
 @Getter
-public class CustomUserDetails implements UserDetails { // 클래스 이름 변경
+public class CustomUserDetails implements UserDetails {
 
     private final String userId;
     private final String password;
-    private final User user; // 필요한 경우 User 객체 포함
+    private final User user;
 
     public CustomUserDetails(User user) {
         this.userId = user.getUserId();
@@ -26,11 +24,10 @@ public class CustomUserDetails implements UserDetails { // 클래스 이름 변�
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // User 엔티티에 Role 정보가 있다면 아래와 같이 사용
         if (user != null && user.getRole() != null) {
             return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         }
-        return List.of(new SimpleGrantedAuthority("ROLE_USER")); // 기본 역할 설정
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -44,22 +41,14 @@ public class CustomUserDetails implements UserDetails { // 클래스 이름 변�
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }

@@ -20,7 +20,7 @@ public class ReportDto {
 	private String title;
 	private String vehicleNumber;
 	private String address;
-	private int viewCnt;
+	private Long viewCnt;
 	
 	
 	
@@ -32,7 +32,7 @@ public class ReportDto {
 				report.getTitle(),
 				report.getVehicleNumber(),
 				report.getAddress(),
-				report.getViewCnt()
+				report.getViewCount()
 				);
 	}
 	

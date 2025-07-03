@@ -29,7 +29,7 @@ public class WebController {
     @Autowired
     private CommentService commentService; 
     // 루트 페이지 또는 신고 목록 페이지 (Thymeleaf 사용)
-    @GetMapping({"/", "/reports/list"})
+    @GetMapping({"/", "/report/list"})
     public String getAllReports(
             @RequestParam(required = false) String carNumber,
             @RequestParam(required = false) String location,
@@ -59,18 +59,18 @@ public class WebController {
         model.addAttribute("endDate", endDate);
         model.addAttribute("keyword", keyword);
 
-        return "reports/list"; 
+        return "report/report-list"; 
     }
 
 
     // 신고 상세 페이지 (Thymeleaf 사용)
-    @GetMapping("/reports/{reportId}")
+    @GetMapping("/report/{reportId}")
     public String getReportDetail(@PathVariable Long reportId, Model model) {
         // ReportDetailDto 대신 ReportDto를 사용하도록 변경
         ReportDto reportDetail = reportService.getReportDetail(reportId); // 상세 정보 가져오기
         model.addAttribute("report", reportDetail);
 
-        return "reports/detail"; 
+        return "reports/report-detail"; 
     }
   
 
@@ -83,9 +83,5 @@ public class WebController {
         return "my/reports"; 
     }
 
-    // 로그인 페이지 (필요하다면)
-    @GetMapping("/login")
-    public String login() {
-        return "login"; 
-    }
+  
 }

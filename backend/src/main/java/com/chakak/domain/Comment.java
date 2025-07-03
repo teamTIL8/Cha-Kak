@@ -24,17 +24,14 @@ public class Comment {
 	private Long commentId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "REPORT_ID")
+	@JoinColumn(name = "REPORT_ID")  // 대문자 맞춤
 	private Report report;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="USER_ID")
+	@JoinColumn(name = "USER_ID")    // 대문자 맞춤
 	private User user;
-	
-
 	
 	private String content;
 	private LocalDateTime createdAt = LocalDateTime.now();
 	private LocalDateTime updatedAt = LocalDateTime.now();
-
 }
