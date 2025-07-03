@@ -64,7 +64,7 @@ public class WebController {
 
 
     // 신고 상세 페이지 (Thymeleaf 사용)
-    @GetMapping("/report/{reportId}")
+    @GetMapping("/report/view/{reportId}")
     public String getReportDetail(@PathVariable Long reportId, Model model) {
         // ReportDetailDto 대신 ReportDto를 사용하도록 변경
         ReportDto reportDetail = reportService.getReportDetail(reportId); // 상세 정보 가져오기

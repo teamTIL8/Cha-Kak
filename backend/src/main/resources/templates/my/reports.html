@@ -4,30 +4,152 @@
     <meta charset="UTF-8">
     <title>내가 작성한 신고글</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        .report-list { list-style: none; padding: 0; }
-        .report-list li { background-color: #f9f9f9; margin-bottom: 10px; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .report-list li a { text-decoration: none; color: #007bff; font-weight: bold; }
-        .report-list li a:hover { text-decoration: underline; }
-        .no-reports { color: #666; font-style: italic; }
+        * {margin:0px; padding:0px;}
+        h5 {margin:2px;}
+        .wrapper{width:1280px;height:800px;}
+        .sidebar{width:200px;height:800px;border-right:1px solid black;float:left;padding:10px;}
+        .content{width:auto;height:800px;float:left;padding:10px;}
+        .clear{clear:both;}
+        .menu{margin:8px;}
+        .menu li{list-style-type: none; cursor: pointer;}
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #f2f2f2;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .report-button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .report-button:hover {
+            background-color: #45a049;
+        }
+
+        /* 🔵 내가 작성한 신고글 - 리스트 스타일 */
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+
+        .report-list li {
+            background-color: #ffffff;
+            padding: 12px 16px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .report-list li:hover {
+            background-color: #f9f9f9;
+        }
+
+        .report-list li a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .report-list li a:hover {
+            text-decoration: underline;
+        }
+
+        .no-reports {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #555;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back-button:hover {
+            background-color: #333;
+        }
     </style>
 </head>
 <body>
-    <h1>내가 작성한 신고글</h1>
-
-    <div th:if="${#lists.isEmpty(myReports)}" class="no-reports">
-        <p>아직 작성한 신고글이 없습니다.</p>
+<div class="wrapper">
+    <!-- ✅ 사이드바 -->
+    <div class="sidebar">
+        <div class="menu">
+            <h3>제보</h3>
+            <ul>
+                <li onclick="location.href='/report/new'">제보 신청</li>
+                <li onclick="location.href='/report/list'">제보 조회</li>
+                <li onclick="location.href='/my/reports'">제보 내역</li>
+            </ul>
+        </div>
+        <div class="menu">
+            <h3>마이페이지</h3>
+            <ul>
+                <li>나의 정보</li>
+                <li>신고 평가</li>
+            </ul>
+        </div>
     </div>
-    <ul class="report-list" th:unless="${#lists.isEmpty(myReports)}">
-        <li th:each="report : ${myReports}">
-            <a th:href="@{/reports/{id}(id=${report.reportId})}" th:text="${report.title}">신고 제목</a><br>
-            차량 번호: <span th:text="${report.vehicleNumber}"></span><br>
-            주소: <span th:text="${report.address}"></span><br>
-            조회수: <span th:text="${report.viewCnt}"></span>
-        </li>
-    </ul>
 
-    <a th:href="@{/}" class="back-button">메인으로 돌아가기</a>
+    <!-- ✅ 본문 -->
+    <div class="content">
+        <h1><b>내가 작성한 신고글</b></h1>
+        <h5>사용자가 직접 작성한 신고글 목록</h5>
+        <hr>
+
+        <div th:if="${#lists.isEmpty(myReports)}" class="no-reports">
+            <p>아직 작성한 신고글이 없습니다.</p>
+        </div>
+
+        <ul class="report-list" th:unless="${#lists.isEmpty(myReports)}">
+            <li th:each="report : ${myReports}" th:onclick="|location.href='/report/view/${report.reportId}'|">
+                <a th:href="@{/report/view/{id}(id=${report.reportId})}" th:text="${report.title}">신고 제목</a><br>
+                차량 번호: <span th:text="${report.vehicleNumber}"></span><br>
+                주소: <span th:text="${report.address}"></span><br>
+                조회수: <span th:text="${report.viewCnt}"></span>
+            </li>
+        </ul>
+
+        <a th:href="@{/}" class="back-button">메인으로 돌아가기</a>
+    </div>
+
+    <div class="clear"></div>
+</div>
 </body>
 </html>
