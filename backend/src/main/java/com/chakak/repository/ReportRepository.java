@@ -44,10 +44,10 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     
     // 반복 제보 위치 통계 (지역별)
     @Query(value = """
-    	    SELECT address, COUNT(*) AS count
+    	    SELECT location_type AS location, COUNT(*) AS count
     	    FROM report
-    	    WHERE address IS NOT NULL
-    	    GROUP BY address
+    	    WHERE location_type IS NOT NULL
+    	    GROUP BY location_type
     	    ORDER BY count DESC
     	    LIMIT 10
     	""", nativeQuery = true)
