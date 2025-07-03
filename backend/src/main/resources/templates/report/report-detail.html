@@ -45,6 +45,11 @@
 			<h5>불법 주정차의 상세 신고 내용 조회 </h5>
 			
 			<hr>
+			<div>
+				<button type="button" class="edit-btn" 
+				 		 th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
+				</button>
+			</div>
 			
 			<h5 style="display: inline;">제목 : </h5>
 			<span th:text="${report.title}"></span>
@@ -80,7 +85,7 @@
 				<img th:src="@{'/images/' + ${image.imgPath}}" style="width: 400px; height: auto; margin-bottom: 10px;"/>
 	        </div>
 			
-			<h5>위반 일자</h5>
+			<h5>제보 일자</h5>
 			<div class="container">
 				<span th:text="${#temporals.format(report.reportTime, 'yyyy-MM-dd HH:mm')}"></span>
 			</div>

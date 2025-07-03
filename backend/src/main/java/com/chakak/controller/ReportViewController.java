@@ -67,7 +67,27 @@ public class ReportViewController {
 	 * */
 	@GetMapping("/report/edit/{reportId}")
 	public String editReportForm(Model model, @PathVariable Long reportId) {
-		model.addAttribute("test", "hello thymeleaf");
+		
+		Report report = service.findById(reportId);
+		
+		ReportResponse reportResponse = new ReportResponse(report.getReportId(), 
+															 report.getTitle(), 
+															 report.getUserId(),
+															 report.getVehicleNumber(),
+															 report.getReportTime(),
+															 report.getViolationType(),
+															 report.getAddress(),
+															 report.getLatitude(),
+															 report.getLongitude(),
+															 report.getDescription());
+		
+		
+		List<ReportImage> reportImages = report.getReportImages();
+		
+		model.addAttribute("report", reportResponse);
+		model.addAttribute("reportImages", reportImages);
+		model.addAttribute("violationTypeList", Violation.values());
+		
 		return "report/report-edit";
 	}
 	
