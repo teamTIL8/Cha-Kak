@@ -14,4 +14,6 @@ public class AuthErrorResponseDto {
     public AuthErrorResponseDto(String message) {
         this.message = message;
     }
+    
+   
 }

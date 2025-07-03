@@ -14,6 +14,7 @@ import com.chakak.domain.ReportImage;
 import com.chakak.dto.response.ReportResponse;
 import com.chakak.service.ReportService;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 @Controller

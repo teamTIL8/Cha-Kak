@@ -16,14 +16,11 @@ public class ReportResponse {
 	private String userId;
 	private String vehicleNumber;
 	private LocalDateTime reportTime;
-	private Long viewCount = 0L;
-	private Violation violationType;
 	
+	private Violation violationType;
 	private String address; //지도상 주소
 	private double latitude; // 위도
 	private double longitude; // 경도
-	
-	private String maskedCarNumber; 
-	
 	private String description;
+	
 }
