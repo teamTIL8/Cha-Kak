@@ -47,7 +47,7 @@ public class AdminUserService {
     public void forceDeleteUser(String userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("유저 없음"));
-        user.setDeleted(true);
+        user.setIsDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
     }
