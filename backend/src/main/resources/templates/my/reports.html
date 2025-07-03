@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내가 작성한 신고글</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .report-list { list-style: none; padding: 0; }
+        .report-list li { background-color: #f9f9f9; margin-bottom: 10px; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .report-list li a { text-decoration: none; color: #007bff; font-weight: bold; }
+        .report-list li a:hover { text-decoration: underline; }
+        .no-reports { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>내가 작성한 신고글</h1>
+
+    <div th:if="${#lists.isEmpty(myReports)}" class="no-reports">
+        <p>아직 작성한 신고글이 없습니다.</p>
+    </div>
+    <ul class="report-list" th:unless="${#lists.isEmpty(myReports)}">
+        <li th:each="report : ${myReports}">
+            <a th:href="@{/reports/{id}(id=${report.reportId})}" th:text="${report.title}">신고 제목</a><br>
+            차량 번호: <span th:text="${report.vehicleNumber}"></span><br>
+            주소: <span th:text="${report.address}"></span><br>
+            조회수: <span th:text="${report.viewCnt}"></span>
+        </li>
+    </ul>
+
+    <a th:href="@{/}" class="back-button">메인으로 돌아가기</a>
+</body>
+</html>

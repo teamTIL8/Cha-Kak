@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${report.title}"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"> <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .report-detail { border: 1px solid #ddd; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background-color: #fff; }
+        .report-detail h1 { color: #333; margin-top: 0; }
+        .report-detail p { line-height: 1.6; color: #555; }
+        .report-detail strong { color: #007bff; }
+        .back-button { display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+        .back-button:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+    <div class="report-detail">
+        <h1 th:text="${report.title}">신고 제목</h1>
+        <p><strong>작성자:</strong> <span th:text="${report.userId}"></span></p>
+        <p><strong>차량 번호:</strong> <span th:text="${report.vehicleNumber}"></span></p>
+        <p><strong>위반 유형:</strong> <span th:text="${report.violationType}"></span></p>
+        <p><strong>주소:</strong> <span th:text="${report.address}"></span></p>
+        <p><strong>좌표:</strong> <span th:text="${report.latitude} + ', ' + ${report.longitude}"></span></p>
+        <p><strong>설명:</strong> <span th:text="${report.description}"></span></p>
+        <p><strong>조회수:</strong> <span th:text="${report.viewCnt}"></span></p>
+        <p><strong>신고 시간:</strong> <span th:text="${#temporals.format(report.reportTime, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p><strong>작성일:</strong> <span th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+    </div>
+
+    <a th:href="@{/}" class="back-button">목록으로 돌아가기</a>
+</body>
+</html>
