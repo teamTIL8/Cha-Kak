@@ -1,5 +1,6 @@
 package com.chakak.service;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -45,6 +46,29 @@ public class ReportServiceImpl implements ReportService{
 	@Override
 	public Report findById(Long reportId) {
 		return repository.findById(reportId).orElse(null);
+	}
+
+	@Override
+	public void deleteReport(Long reportId) {
+		Report report = repository.findById(reportId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 제보입니다."));
+		
+		/* 본인 제보거나 관리자 일 경우 삭제 가능
+        if (!report.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인만 삭제할 수 있습니다.");
+        }
+        */
+
+        // 1. 첨부 파일 삭제
+        report.getReportImages().forEach(image -> {
+            File file = new File(image.getImgPath());
+            if (file.exists()) {
+                file.delete();
+            }
+        });
+
+        // 2. 제보글 및 연관 댓글, 이미지 DB 삭제
+        repository.delete(report);
 	}
 
 }

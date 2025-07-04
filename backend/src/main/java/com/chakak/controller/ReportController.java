@@ -2,7 +2,9 @@ package com.chakak.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -84,5 +86,14 @@ public class ReportController {
 
 	    // 4. 결과 반환
 	    return ResponseEntity.ok(updatedReport.getReportId());
+	}
+	
+	/**
+	 * 제보 신청 내역 삭제
+	 * */
+	@DeleteMapping("/{reportId}")
+	public ResponseEntity<?> deleteReport(@PathVariable Long reportId) {
+	    service.deleteReport(reportId);
+	    return ResponseEntity.ok("제보가 삭제되었습니다.");
 	}
 }

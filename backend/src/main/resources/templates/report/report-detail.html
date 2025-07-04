@@ -118,6 +118,9 @@
 				<button type="button" class="edit-btn" 
 				 		 th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
 				</button>
+				<button type="button" class="delete-btn"
+						th:onclick="|deleteReport(${report.reportId});|">삭제
+	            </button>
 			</div>
 			
 			<h5 style="display: inline;">제목 : </h5>
@@ -379,6 +382,36 @@
 	    const minutes = ('0' + date.getMinutes()).slice(-2);
 
 	    return `${year}-${month}-${day} ${hours}:${minutes}`;
+	}
+	
+	// 제보 삭제
+	async function deleteReport() {
+		
+		if(!confirm('삭제 하시겠습니까?')){
+			return false;
+		}
+		
+		const reportId = /*[[${report.reportId}]]*/ 0;
+	    const commentData = {
+			reportId: reportId,
+	        userId: 'test1234' // 사용자 ID
+	    };
+		try {
+			
+		    const response = await fetch('/api/reports/' + reportId, {
+		        method: 'DELETE',
+		        headers: { 'Content-Type': 'application/json' },
+		    });
+	
+		    if (response.ok) {
+		        alert('제보가 삭제되었습니다.');
+				window.location.href='/report/list';
+		    } else {
+		        alert('제보 삭제 중 오류가 발생하였습니다.');
+		    }
+		}catch{
+			alert('네트워크 오류가 발생하였습니다.');
+		}
 	}
 </script>	
 </html>
