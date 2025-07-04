@@ -31,6 +31,23 @@ public class ReportImageServiceImpl implements ReportImageService{
 		
 		Report report = reportRepository.findById(reportId).orElseThrow();
 		
+		//1. 기존 이미지 삭제
+	    List<ReportImage> existingImages = repository.findByReport(report);
+	    for (ReportImage image : existingImages) {
+	        // 파일 삭제
+	        Path filePath = Paths.get(uploadDir, image.getImgPath());
+	        try {
+	            Files.deleteIfExists(filePath);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    // DB 이미지 삭제
+	    repository.deleteAll(existingImages);
+		
+		
+	    //2. 새 이미지 저장
         String today = LocalDate.now().toString();
         String savePath = uploadDir + today;
 

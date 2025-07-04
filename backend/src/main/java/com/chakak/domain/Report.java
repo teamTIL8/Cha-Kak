@@ -64,6 +64,7 @@ public class Report {
 
     @Enumerated(EnumType.STRING)
     private Violation violationType;
+<<<<<<< HEAD
 
     private String address;
 
@@ -73,6 +74,16 @@ public class Report {
     private String description;
 
     @Column(name = "VIEW_CNT")
+=======
+	
+	private String address; //지도상 주소
+	private double latitude; // 위도
+	private double longitude; // 경도
+	private String locationType; // 지역(시/구/동 단위)
+	private String description;
+	
+    @Column(name = "view_cnt")
+>>>>>>> main
     private Long viewCount = 0L;
 
     @Column(insertable = false, updatable = false)

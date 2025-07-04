@@ -16,6 +16,7 @@ import com.chakak.dto.ReportDto;
 import com.chakak.repository.ReportRepository;
 import com.chakak.repository.ReportSpecification;
 import com.chakak.repository.UserRepository;
+import com.chakak.util.AddressUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -52,6 +53,7 @@ public class ReportServiceImpl implements ReportService {
 	      String reportDateStr, String violationTypeStr, String startDateStr, String endDateStr,
 	      String keyword, Pageable pageable) {
 	
+<<<<<<< HEAD
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate reportDate = null;
 			LocalDate startDate = null;
@@ -92,6 +94,22 @@ public class ReportServiceImpl implements ReportService {
 			Page<Report> reportPage = repository.findAll(spec, pageable);
 			
 			return reportPage.map(ReportDto::fromEntity);
+=======
+	@Override
+	public Report save(Report report) {
+		//간접세터 setUserId() 사용 
+		String userId = report.getUserId();
+		User user = userRepository.findByUserId(userId)
+	            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자"));
+
+	    report.setUser(user); // 영속 상태로 다시 교체
+	    
+	    // address를 지역(location_type)으로 파싱 
+	    String address = report.getAddress();
+	    String locationType = AddressUtils.extractRegion(address);
+	    report.setLocationType(locationType);
+		return repository.save(report);
+>>>>>>> main
 	}
 	
     // ✅ 내가 쓴 글 조회 

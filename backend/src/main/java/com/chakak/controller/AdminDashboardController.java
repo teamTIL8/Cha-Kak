@@ -24,7 +24,8 @@ public class AdminDashboardController {
     	System.out.println("대시보드 접근 성공");
         model.addAttribute("topVehicles", statisticsService.getTopVehicleReports()); // 차량 통계
         model.addAttribute("typeStats", statisticsService.getViolationTypeStats()); // 유형별 통계
-        model.addAttribute("addressStats", statisticsService.getFrequentAddresses()); // 반복 지역 통계 
+        model.addAttribute("locationStats", statisticsService.getFrequentAddresses()); // 반복 지역 통계 
+       
         return "admin/dashboard";
     }
 }
