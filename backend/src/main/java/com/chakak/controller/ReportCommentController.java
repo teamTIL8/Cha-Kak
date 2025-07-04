@@ -30,24 +30,33 @@ public class ReportCommentController {
 	 * 제보 댓글 저장
 	 * */
 	@PostMapping
-	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto){
-		Comment comment = new Comment(null, commentDto.getUserId(), commentDto.getContent(), null, null);
-		Comment savedComment = service.save(comment, commentDto.getReportId());
-		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
-		return ResponseEntity.ok(commentList);
-	}
+    public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto) {
+        Comment comment = new Comment();
+        comment.setContent(commentDto.getContent());
+        // User는 service에서 따로 처리 안 하니, Comment 객체에는 user 필드 세팅 없이 저장
+
+        Comment savedComment = service.save(comment, commentDto.getReportId());
+
+        List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
+        return ResponseEntity.ok(commentList);
+    }
+
 	
 	/**
 	 * 제보 댓글 수정
 	 * */
 	@PutMapping
-	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto){
-		Comment comment = new Comment(commentDto.getCommentId(), commentDto.getUserId(), commentDto.getContent(), null, null);
-		Comment updatedComment = service.update(comment, commentDto.getReportId());
-		
-		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
-		return ResponseEntity.ok(commentList);
-	}
+    public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto) {
+        Comment comment = new Comment();
+        comment.setCommentId(commentDto.getCommentId());
+        comment.setContent(commentDto.getContent());
+        // User 관련 처리도 생략
+
+        Comment updatedComment = service.update(comment, commentDto.getReportId());
+
+        List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
+        return ResponseEntity.ok(commentList);
+    }
 	
 	/**
 	 * 제보 댓글 삭제

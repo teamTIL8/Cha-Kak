@@ -21,6 +21,7 @@ public class ReportImage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long imgId;
 	private String imgPath;
+	
 	@Column(insertable = false, updatable = false)
 	private LocalDateTime createdAt;
 	

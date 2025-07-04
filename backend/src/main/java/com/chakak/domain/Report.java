@@ -17,17 +17,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "report")
+@Table(name = "REPORT")
 @Getter
 @Setter
 @Data
@@ -35,51 +36,48 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class Report {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long reportId;
-	
-	//연관관계 매핑 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reportId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false) //user_id컬럼과 DB매핑
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
-	
-    // 간접 setter
+
     public void setUserId(String userId) {
         if (this.user == null) {
             this.user = new User();
         }
-        this.user.setUserId(userId); 
+        this.user.setUserId(userId);
     }
-    
-    // 간접 getter
+
     public String getUserId() {
         return this.user != null ? this.user.getUserId() : null;
     }
-    
-	private String title;
-	private String vehicleNumber; 
 
-	@Column(insertable = false, updatable = false)
-	private LocalDateTime reportTime;
-	
-	@Enumerated(EnumType.STRING)
+    private String title;
+    private String vehicleNumber;
+
+    @Column(insertable = false, updatable = false)
+    private LocalDateTime reportTime;
+
+    @Enumerated(EnumType.STRING)
     private Violation violationType;
-	
-	private String address; //지도상 주소
-	private double latitude; // 위도
-	private double longitude; // 경도
-	private String locationType; // 지역(시/구/동 단위)
-	private String description;
-	
+
+    private String address; //지도상 주소
+    private double latitude; // 위도
+    private double longitude; // 경도
+    private String locationType; // 지역(시/구/동 단위)
+    private String description;
+
     @Column(name = "view_cnt")
     private Long viewCount = 0L;
-	
-	@Column(insertable = false, updatable = false)
-	private LocalDateTime createdAt;
-	
-	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+
+    @Column(insertable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReportImage> reportImages = new ArrayList<>();
 
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
