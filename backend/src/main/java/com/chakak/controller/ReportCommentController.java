@@ -1,5 +1,6 @@
 package com.chakak.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,8 @@ public class ReportCommentController {
 	 * 제보 댓글 저장
 	 * */
 	@PostMapping
-	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto){
-		Comment comment = new Comment(null, commentDto.getUserId(), commentDto.getContent(), null, null);
+	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
+		Comment comment = new Comment(null, principal.getName(), commentDto.getContent(), null, null);
 		Comment savedComment = service.save(comment, commentDto.getReportId());
 		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
 		return ResponseEntity.ok(commentList);
@@ -41,8 +42,8 @@ public class ReportCommentController {
 	 * 제보 댓글 수정
 	 * */
 	@PutMapping
-	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto){
-		Comment comment = new Comment(commentDto.getCommentId(), commentDto.getUserId(), commentDto.getContent(), null, null);
+	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
+		Comment comment = new Comment(commentDto.getCommentId(), principal.getName(), commentDto.getContent(), null, null);
 		Comment updatedComment = service.update(comment, commentDto.getReportId());
 		
 		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());

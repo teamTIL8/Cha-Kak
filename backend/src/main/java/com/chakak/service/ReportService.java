@@ -12,6 +12,6 @@ public interface ReportService {
 
 	public Report findById(Long reportId);
 
-	public void deleteReport(Long reportId);
+	public void deleteReport(Long reportId, String userId);
 	
 }

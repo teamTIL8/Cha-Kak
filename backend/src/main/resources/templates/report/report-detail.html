@@ -114,7 +114,7 @@
 			<h5>불법 주정차의 상세 신고 내용 조회 </h5>
 			
 			<hr>
-			<div>
+			<div th:if="${report.userId == currentUserId}">
 				<button type="button" class="edit-btn" 
 				 		 th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
 				</button>
@@ -190,20 +190,21 @@
 				        </div>
 
 				        <div class="comment-content" th:text="${comment.content}"></div>
-						<textarea th:id="'contentId' + ${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;" th:text="${comment.content}"></textarea>
 
-				        <!--<div class="comment-actions" th:if="${comment.userId == currentUserId}">-->
-				        <div class="comment-actions">
-				            <button type="button" class="comment-edit-btn"
-				                    th:onclick="|updateComment('contentId${comment.commentId}', ${comment.commentId});|">
-				                수정
-				            </button>
-							
-				            <button type="button" class="comment-delete-btn"
-									th:onclick="|deleteComment(${comment.commentId});|">
-				                삭제
-				            </button>
-				            </form>
+				        <div th:if="${comment.userId == currentUserId}">
+							<textarea th:id="'contentId' + ${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;" th:text="${comment.content}"></textarea>
+					        <div class="comment-actions">
+					            <button type="button" class="comment-edit-btn"
+					                    th:onclick="|updateComment('contentId${comment.commentId}', ${comment.commentId});|">
+					                수정
+					            </button>
+								
+					            <button type="button" class="comment-delete-btn"
+										th:onclick="|deleteComment(${comment.commentId});|">
+					                삭제
+					            </button>
+					            </form>
+					        </div>
 				        </div>
 				    </div>
 				</div>
@@ -236,8 +237,7 @@
 		const reportId = /*[[${report.reportId}]]*/ 0;
 	    const commentData = {
 			reportId: reportId,
-	        content: document.getElementById('commentContent').value,
-	        userId: 'test1234' // 사용자 ID
+	        content: document.getElementById('commentContent').value
 	    };
 
 	    const response = await fetch('/api/comments', {
@@ -262,8 +262,7 @@
 	    const commentData = {
 			reportId: reportId,
 			commentId: commentId,
-	        content: document.getElementById(contentId).value,
-	        userId: 'test1234' // 사용자 ID
+	        content: document.getElementById(contentId).value
 	    };
 
 	    const response = await fetch('/api/comments', {
@@ -293,8 +292,7 @@
 		const reportId = /*[[${report.reportId}]]*/ 0;
 	    const commentData = {
 			reportId: reportId,
-			commentId: commentId,
-	        userId: 'test1234' // 사용자 ID
+			commentId: commentId
 	    };
 
 	    const response = await fetch('/api/comments', {
@@ -327,7 +325,8 @@
 
 	        // 수정/삭제 버튼 보일지 판단 (currentUserId는 전역변수나 서버에서 JS에 넘겨줘야 함)
 	        //const isOwner = comment.userId === currentUserId;
-	        const isOwner = true;
+			const isOwner = comment.userId === /*[[${currentUserId}]]*/'';
+			//const isOwner = true;
 										
 	        return `
 	            <div class="comment-item">
@@ -336,8 +335,8 @@
 	                    <span class="comment-time">${formattedDate}</span>
 	                </div>
 	                <div class="comment-content">${escapeHtml(comment.content)}</div>
-					<textarea id="contentId${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;">${escapeHtml(comment.content)}</textarea>
 	                ${isOwner ? `
+					<textarea id="contentId${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;">${escapeHtml(comment.content)}</textarea>
 	                    <div class="comment-actions">
 	                        <button type="button" class="comment-edit-btn" 
 	                            onclick="updateComment('contentId${comment.commentId}' , ${comment.commentId});">

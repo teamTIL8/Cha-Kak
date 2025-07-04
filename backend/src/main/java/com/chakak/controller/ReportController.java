@@ -1,5 +1,6 @@
 package com.chakak.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -33,10 +34,12 @@ public class ReportController {
 	 * 제보 신청 내역 저장
 	 * */
 	@PostMapping
-	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto){
+	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto, Principal principal){
+		String userId = principal.getName(); 
+		
 		Report report = new Report();
 		report.setTitle(reportDto.getTitle());
-		report.setUserId(reportDto.getUserId());
+		report.setUserId(userId);
 		report.setViolationType(reportDto.getViolationType());
 		report.setVehicleNumber(reportDto.getVehicleNumber());
 		report.setDescription(reportDto.getDescription());
@@ -64,7 +67,7 @@ public class ReportController {
 	 * 제보 신청 내역 수정
 	 * */
 	@PutMapping("/{reportId}")
-	public ResponseEntity<?> updateReport(@PathVariable Long reportId, @RequestBody ReportRequest reportDto) {
+	public ResponseEntity<?> updateReport(@PathVariable Long reportId, @RequestBody ReportRequest reportDto, Principal principal) {
 	    // 1. 수정할 대상 조회
 	    Report report = service.findById(reportId);
 	    if (report == null) {
@@ -73,7 +76,7 @@ public class ReportController {
 
 	    // 2. 데이터 수정
 	    report.setTitle(reportDto.getTitle());
-	    report.setUserId(reportDto.getUserId());
+	    report.setUserId(principal.getName());
 	    report.setViolationType(reportDto.getViolationType());
 	    report.setVehicleNumber(reportDto.getVehicleNumber());
 	    report.setDescription(reportDto.getDescription());
@@ -92,8 +95,8 @@ public class ReportController {
 	 * 제보 신청 내역 삭제
 	 * */
 	@DeleteMapping("/{reportId}")
-	public ResponseEntity<?> deleteReport(@PathVariable Long reportId) {
-	    service.deleteReport(reportId);
+	public ResponseEntity<?> deleteReport(@PathVariable Long reportId, Principal principal) {
+	    service.deleteReport(reportId, principal.getName());
 	    return ResponseEntity.ok("제보가 삭제되었습니다.");
 	}
 }
