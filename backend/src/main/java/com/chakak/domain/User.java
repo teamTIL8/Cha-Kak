@@ -24,7 +24,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = NOW() WHERE user_id = ?") // 테이블 이름 수정
+@SQLDelete(sql = "UPDATE user SET is_deleted = true, deleted_at = NOW() WHERE user_id = ?") // 테이블 이름 수정
 @Where(clause = "is_deleted = false") // is_deleted가 false인 레코드만 조회
 public class User implements UserDetails { // UserDetails 인터페이스 구현 유지
 
