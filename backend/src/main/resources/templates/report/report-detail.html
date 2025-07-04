@@ -1,7 +1,7 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title th:text="${report.title}">차칵</title>
+	<title>차칵</title>
 	<style>
 		* {margin:0px; padding:0px;}
 		h5 {margin:2px;}
@@ -14,10 +14,10 @@
 		#map{margin-top: 10px;margin-bottom: 40px;}
 		#description{width:300px;height:100px;}
 		.container{margin-bottom:10px;}
-
 	    .comment-list {
 	        margin-top: 20px;
 	    }
+
 	    .comment-item {
 	        border: 1px solid #e0e0e0;
 	        border-radius: 8px;
@@ -25,29 +25,35 @@
 	        margin-bottom: 15px;
 	        background-color: #f9f9f9;
 	    }
+
 	    .comment-header {
 	        display: flex;
 	        justify-content: space-between;
 	        align-items: center;
 	        margin-bottom: 10px;
 	    }
+
 	    .comment-writer {
 	        font-weight: bold;
 	        font-size: 1.1em;
 	    }
+
 	    .comment-time {
 	        font-size: 0.9em;
 	        color: gray;
 	    }
+
 	    .comment-content {
 	        margin-bottom: 10px;
 	        font-size: 1em;
 	        line-height: 1.4;
 	    }
+
 	    .comment-actions {
 	        display: flex;
 	        gap: 10px;
 	    }
+
 	    .comment-edit-btn,.comment-delete-btn,.comment-save-btn {
 	        padding: 5px 12px;
 	        border: none;
@@ -55,10 +61,12 @@
 	        cursor: pointer;
 	        font-size: 0.9em;
 	    }
+
 	    .comment-edit-btn {
 	        background-color: #28a745;
 	        color: white;
 	    }
+
 	    .comment-save-btn {
 	        background-color: rgb(0, 128, 255);
 	        color: white;
@@ -67,33 +75,14 @@
 	        background-color: #dc3545;
 	        color: white;
 	    }
+
 	    .comment-edit-btn:hover {
 	        background-color: #218838;
 	    }
+
 	    .comment-delete-btn:hover {
 	        background-color: #c82333;
 	    }
-
-		/* 신고 상세 스타일 */
-		.report-detail {
-			border: 1px solid #ddd;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-			background-color: #fff;
-			margin-bottom: 30px;
-		}
-		.report-detail h1 {
-			color: #333;
-			margin-top: 0;
-		}
-		.report-detail p {
-			line-height: 1.6;
-			color: #555;
-		}
-		.report-detail strong {
-			color: #007bff;
-		}
 	</style>
 	
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -113,20 +102,21 @@
 			<div class="menu">
 				<h3>마이페이지</h3>
 				<ul>
-					<li onclick="location.href='/report/my/reports'">나의 정보</li>
-					<li>신고 평가</li>
+					<li>나의 정보</li>
 					<li>신고 평가</li>
 				</ul>
 			</div>
 		</div>
 		<div class="content">
-			<h1><b>제보 상세 내용</b></h1>
+			<h1>
+				<b>제보 상세 내용</b>
+			</h1>
 			<h5>불법 주정차의 상세 신고 내용 조회 </h5>
 			
 			<hr>
-			<div>
+			<div th:if="${report.userId == currentUserId}">
 				<button type="button" class="edit-btn" 
-					th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
+				 		 th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
 				</button>
 				<button type="button" class="delete-btn"
 						th:onclick="|deleteReport(${report.reportId});|">삭제
@@ -134,39 +124,46 @@
 			</div>
 			
 			<h5 style="display: inline;">제목 : </h5>
-			<span th:text="${report.title}"></span><br>
+			<span th:text="${report.title}"></span>
+			<br>
 			
 			<h5 style="display: inline;">위반 유형 : </h5>
-			<span th:text="${report.violationType}"></span><br>
+			<span th:text="${report.violationType}"></span>
+			<br>
 			
 			<h5 style="display: inline;">상세 신고 내용 : </h5>
-			<span th:text="${report.description}"></span><br>
+			<span th:text="${report.description}"></span>
+			<br>
 			
 			<h5 style="display: inline;">차량 번호 : </h5>
-			<span th:text="${report.vehicleNumber}"></span><br>
+			<span th:text="${report.vehicleNumber}"></span>
+			<br>
 
+			<h5 style="display: inline;">작성자 : </h5>
+			<span th:text="${report.userId}"></span>
+			<br>
+			
+			<h5 style="display: inline;"> 위반 지역 : </h5>
+			<input type="text" th:value="${report.address}" readonly />
+			<input type="hidden" th:value="${report.latitude}"/> <!-- 위도 -->
+			<input type="hidden" th:value="${report.longitude}"/> <!-- 경도 -->
+			
+			<!-- 지도-->
+			<div id="map" style="width:800px;height:600px;"></div>
+			
+			
 			<h5>위반 사진</h5>
 			<div th:each="image : ${reportImages}">
 				<img th:src="@{'/images/' + ${image.imgPath}}" style="width: 400px; height: auto; margin-bottom: 10px;"/>
-			</div>
+	        </div>
 			
 			<h5>제보 일자</h5>
 			<div class="container">
 				<span th:text="${#temporals.format(report.reportTime, 'yyyy-MM-dd HH:mm')}"></span>
 			</div>
-
-			<!-- 신고 상세 정보 -->
-			<div class="report-detail">
-				<p><strong>작성자:</strong> <span th:text="${report.userId}"></span></p>
-				<p><strong>주소:</strong> <span th:text="${report.address}"></span></p>
-				<p><strong>좌표:</strong> <span th:text="${report.latitude} + ', ' + ${report.longitude}"></span></p>
-				<p><strong>조회수:</strong> <span th:text="${report.viewCnt}"></span></p>
-				<p><strong>작성일:</strong> <span th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
-			</div>
-
+			
 			<hr>
-
-			<!--  댓글 섹션 -->
+			<!-- 댓글 영역 -->
 			<div class="comment-section" style="margin-top: 30px;">
 			    <h3>댓글 작성</h3>
 
@@ -193,211 +190,227 @@
 				        </div>
 
 				        <div class="comment-content" th:text="${comment.content}"></div>
-						<textarea th:id="'contentId' + ${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;" th:text="${comment.content}"></textarea>
 
-				        <div class="comment-actions">
-				            <button type="button" class="comment-edit-btn"
-				                    th:onclick="|updateComment('contentId${comment.commentId}', ${comment.commentId});|">
-				                수정
-				            </button>
-							
-				            <button type="button" class="comment-delete-btn"
-									th:onclick="|deleteComment(${comment.commentId});|">
-				                삭제
-				            </button>
+				        <div th:if="${comment.userId == currentUserId}">
+							<textarea th:id="'contentId' + ${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;" th:text="${comment.content}"></textarea>
+					        <div class="comment-actions">
+					            <button type="button" class="comment-edit-btn"
+					                    th:onclick="|updateComment('contentId${comment.commentId}', ${comment.commentId});|">
+					                수정
+					            </button>
+								
+					            <button type="button" class="comment-delete-btn"
+										th:onclick="|deleteComment(${comment.commentId});|">
+					                삭제
+					            </button>
+					            </form>
+					        </div>
 				        </div>
 				    </div>
 				</div>
 			</div>
-
-			<!-- 지도 -->
-			<div id="map" style="width:800px;height:600px;"></div>
 		</div>
 		<div class="clear"></div>
 	</div>
+</body>
+<script th:inline="javascript">
+	var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+	
+	let latitude = /*[[${report.latitude}]]*/ 0;
+    let longitude = /*[[${report.longitude}]]*/ 0;
+	
+	var options = { //지도를 생성할 때 필요한 기본 옵션
+		center: new kakao.maps.LatLng(latitude, longitude),
+		level: 3 //지도의 레벨(확대, 축소 정도)
+	};
 
-	<script th:inline="javascript">
-		var container = document.getElementById('map');
-		let latitude = /*[[${report.latitude}]]*/ 0;
-		let longitude = /*[[${report.longitude}]]*/ 0;
+	var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+	
+    var geocoder = new kakao.maps.services.Geocoder();
+    var marker = new kakao.maps.Marker({
+        map: map,
+        position: map.getCenter()
+    });
+	
+	// 댓글 작성 비동기 처리
+	async function submitComment() {
+		const reportId = /*[[${report.reportId}]]*/ 0;
+	    const commentData = {
+			reportId: reportId,
+	        content: document.getElementById('commentContent').value
+	    };
 
-		var options = {
-			center: new kakao.maps.LatLng(latitude, longitude),
-			level: 3
-		};
+	    const response = await fetch('/api/comments', {
+	        method: 'POST',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify(commentData)
+	    });
 
-		var map = new kakao.maps.Map(container, options);
+	    if (response.ok) {
+			const commentList = await response.json();
+	        loadComments(commentList);
+			
+			document.getElementById("commentContent").value = "";
+	    } else {
+	        alert('댓글 작성 중 오류가 발생하였습니다.');
+	    }
+	}
+	
+	// 댓글 수정 비동기 처리
+	async function updateComment(contentId, commentId) {
+		const reportId = /*[[${report.reportId}]]*/ 0;
+	    const commentData = {
+			reportId: reportId,
+			commentId: commentId,
+	        content: document.getElementById(contentId).value
+	    };
 
-		var geocoder = new kakao.maps.services.Geocoder();
-		var marker = new kakao.maps.Marker({
-			map: map,
-			position: map.getCenter()
-		});
+	    const response = await fetch('/api/comments', {
+	        method: 'PUT',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify(commentData)
+	    });
 
-		// 댓글 작성 비동기 처리
-		async function submitComment() {
-			const reportId = /*[[${report.reportId}]]*/ 0;
-		    const commentData = {
-				reportId: reportId,
-		        content: document.getElementById('commentContent').value,
-		        userId: 'test1234' // 사용자 ID (필요시 동적 변경)
-		    };
-
-		    const response = await fetch('/api/comments', {
-		        method: 'POST',
-		        headers: { 'Content-Type': 'application/json' },
-		        body: JSON.stringify(commentData)
-		    });
-
-		    if (response.ok) {
-				const commentList = await response.json();
-		        loadComments(commentList);
-				document.getElementById("commentContent").value = "";
-		    } else {
-		        alert('댓글 작성 중 오류가 발생하였습니다.');
-		    }
+	    if (response.ok) {
+			const commentList = await response.json();
+	        loadComments(commentList);
+	        alert('댓글이 수정되었습니다.');
+			
+			document.getElementById("commentContent").value = "";
+	    } else {
+	        alert('댓글 수정 중 오류가 발생하였습니다.');
+	    }
+	}
+	
+	// 댓글 삭제 비동기 처리
+	async function deleteComment(commentId) {
+		
+		if(!confirm('삭제 하시겠습니까?')){
+			return false;
 		}
+		
+		const reportId = /*[[${report.reportId}]]*/ 0;
+	    const commentData = {
+			reportId: reportId,
+			commentId: commentId
+	    };
 
-		// 댓글 수정 비동기 처리
-		async function updateComment(contentId, commentId) {
-			const reportId = /*[[${report.reportId}]]*/ 0;
-		    const commentData = {
-				reportId: reportId,
-				commentId: commentId,
-		        content: document.getElementById(contentId).value,
-		        userId: 'test1234' // 사용자 ID
-		    };
+	    const response = await fetch('/api/comments', {
+	        method: 'DELETE',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify(commentData)
+	    });
 
-		    const response = await fetch('/api/comments', {
-		        method: 'PUT',
-		        headers: { 'Content-Type': 'application/json' },
-		        body: JSON.stringify(commentData)
-		    });
+	    if (response.ok) {
+			const commentList = await response.json();
+	        loadComments(commentList);
+	        alert('댓글이 삭제되었습니다.');
+			
+			document.getElementById("commentContent").value = "";
+	    } else {
+	        alert('댓글 삭제 중 오류가 발생하였습니다.');
+	    }
+	}
+	
+	function loadComments(commentsData) {
+	    const commentList = document.querySelector('.comment-list');
+	    
+	    if (!commentsData || commentsData.length === 0) {
+	        commentList.innerHTML = '<p>작성된 댓글이 없습니다.</p>';
+	        return;
+	    }
+	    
+	    commentList.innerHTML = commentsData.map(comment => {
+	        const formattedDate = formatDateTime(comment.createdAt);
 
-		    if (response.ok) {
-				const commentList = await response.json();
-		        loadComments(commentList);
-		        alert('댓글이 수정되었습니다.');
-		    } else {
-		        alert('댓글 수정 중 오류가 발생하였습니다.');
-		    }
+	        // 수정/삭제 버튼 보일지 판단 (currentUserId는 전역변수나 서버에서 JS에 넘겨줘야 함)
+	        //const isOwner = comment.userId === currentUserId;
+			const isOwner = comment.userId === /*[[${currentUserId}]]*/'';
+			//const isOwner = true;
+										
+	        return `
+	            <div class="comment-item">
+	                <div class="comment-header">
+	                    <strong class="comment-writer">${escapeHtml(comment.userId)}</strong>
+	                    <span class="comment-time">${formattedDate}</span>
+	                </div>
+	                <div class="comment-content">${escapeHtml(comment.content)}</div>
+	                ${isOwner ? `
+					<textarea id="contentId${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;">${escapeHtml(comment.content)}</textarea>
+	                    <div class="comment-actions">
+	                        <button type="button" class="comment-edit-btn" 
+	                            onclick="updateComment('contentId${comment.commentId}' , ${comment.commentId});">
+	                            수정
+	                        </button>
+	                        <form action="/report/${comment.reportId}/comment/${comment.commentId}" method="post" class="comment-delete-form" style="display:inline;">
+	                            <input type="hidden" name="_method" value="delete" />
+	                            <button type="submit" class="comment-delete-btn">삭제</button>
+	                        </form>
+	                    </div>
+	                ` : ''}
+	            </div>
+	        `;
+	    }).join('');
+	}
+
+	// HTML 태그 이스케이프 함수 (XSS 방지)
+	function escapeHtml(text) {
+	    if (!text) return '';
+	    return text.replace(/[&<>"']/g, function(m) {
+	        return {
+	            '&': '&amp;',
+	            '<': '&lt;',
+	            '>': '&gt;',
+	            '"': '&quot;',
+	            "'": '&#39;'
+	        }[m];
+	    });
+	}
+	
+	// 시간 format 변경
+	function formatDateTime(dateTimeString) {
+	    const formattedString = dateTimeString.replace('T', ' ');
+
+	    const date = new Date(formattedString);
+
+	    const year = date.getFullYear();
+	    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+	    const day = ('0' + date.getDate()).slice(-2);
+
+	    const hours = ('0' + date.getHours()).slice(-2);
+	    const minutes = ('0' + date.getMinutes()).slice(-2);
+
+	    return `${year}-${month}-${day} ${hours}:${minutes}`;
+	}
+	
+	// 제보 삭제
+	async function deleteReport() {
+		
+		if(!confirm('삭제 하시겠습니까?')){
+			return false;
 		}
-
-		// 댓글 삭제 비동기 처리
-		async function deleteComment(commentId) {
-			if(!confirm('삭제 하시겠습니까?')){
-				return false;
-			}
-
-			const reportId = /*[[${report.reportId}]]*/ 0;
-		    const commentData = {
-				reportId: reportId,
-				commentId: commentId,
-		        userId: 'test1234' // 사용자 ID
-		    };
-
-		    const response = await fetch('/api/comments', {
+		
+		const reportId = /*[[${report.reportId}]]*/ 0;
+	    const commentData = {
+			reportId: reportId,
+	        userId: 'test1234' // 사용자 ID
+	    };
+		try {
+			
+		    const response = await fetch('/api/reports/' + reportId, {
 		        method: 'DELETE',
 		        headers: { 'Content-Type': 'application/json' },
-		        body: JSON.stringify(commentData)
 		    });
-
+	
 		    if (response.ok) {
-				const commentList = await response.json();
-		        loadComments(commentList);
-		        alert('댓글이 삭제되었습니다.');
+		        alert('제보가 삭제되었습니다.');
+				window.location.href='/report/list';
 		    } else {
-		        alert('댓글 삭제 중 오류가 발생하였습니다.');
+		        alert('제보 삭제 중 오류가 발생하였습니다.');
 		    }
+		}catch{
+			alert('네트워크 오류가 발생하였습니다.');
 		}
-
-		// 댓글 목록 렌더링 함수
-		function loadComments(commentsData) {
-		    const commentList = document.querySelector('.comment-list');
-		    
-		    if (!commentsData || commentsData.length === 0) {
-		        commentList.innerHTML = '<p>작성된 댓글이 없습니다.</p>';
-		        return;
-		    }
-		    
-		    commentList.innerHTML = commentsData.map(comment => {
-		        const formattedDate = formatDateTime(comment.createdAt);
-		        const isOwner = true;  // 실제 권한 체크시 수정 필요
-										
-		        return `
-		            <div class="comment-item">
-		                <div class="comment-header">
-		                    <strong class="comment-writer">${escapeHtml(comment.userId)}</strong>
-		                    <span class="comment-time">${formattedDate}</span>
-		                </div>
-		                <div class="comment-content">${escapeHtml(comment.content)}</div>
-						<textarea id="contentId${comment.commentId}" class="comment-edit-textarea" style="display:block; width: 100%; height: 80px;">${escapeHtml(comment.content)}</textarea>
-		                ${isOwner ? `
-		                    <div class="comment-actions">
-		                        <button type="button" class="comment-edit-btn" 
-		                            onclick="updateComment('contentId${comment.commentId}' , ${comment.commentId});">
-		                            수정
-		                        </button>
-		                        <button type="button" class="comment-delete-btn" 
-		                            onclick="deleteComment(${comment.commentId});">
-		                            삭제
-		                        </button>
-		                    </div>
-		                ` : ''}
-		            </div>
-		        `;
-		    }).join('');
-		}
-
-		// HTML 태그 이스케이프 (XSS 방지)
-		function escapeHtml(text) {
-		    if (!text) return '';
-		    return text.replace(/[&<>"']/g, function(m) {
-		        return {
-		            '&': '&amp;',
-		            '<': '&lt;',
-		            '>': '&gt;',
-		            '"': '&quot;',
-		            "'": '&#39;'
-		        }[m];
-		    });
-		}
-
-		// 시간 포맷 변경 함수 (yyyy-MM-dd HH:mm)
-		function formatDateTime(dateTimeString) {
-		    const formattedString = dateTimeString.replace('T', ' ');
-		    const date = new Date(formattedString);
-		    const year = date.getFullYear();
-		    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-		    const day = ('0' + date.getDate()).slice(-2);
-		    const hours = ('0' + date.getHours()).slice(-2);
-		    const minutes = ('0' + date.getMinutes()).slice(-2);
-		    return `${year}-${month}-${day} ${hours}:${minutes}`;
-		}
-		
-		// 제보 삭제
-		async function deleteReport() {
-			if(!confirm('삭제 하시겠습니까?')){
-				return false;
-			}
-			
-			const reportId = /*[[${report.reportId}]]*/ 0;
-		    try {
-			    const response = await fetch('/api/reports/' + reportId, {
-			        method: 'DELETE',
-			        headers: { 'Content-Type': 'application/json' },
-			    });
-		
-			    if (response.ok) {
-			        alert('제보가 삭제되었습니다.');
-					window.location.href='/report/list';
-			    } else {
-			        alert('제보 삭제 중 오류가 발생하였습니다.');
-			    }
-			}catch {
-				alert('네트워크 오류가 발생하였습니다.');
-			}
-		}
-	</script>	
-</body>
+	}
+</script>	
 </html>

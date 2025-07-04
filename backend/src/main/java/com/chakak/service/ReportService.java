@@ -27,5 +27,5 @@ public interface ReportService {
 
     ReportDto getReportDetail(Long id);
 
-    void deleteReport(Long reportId);  // 팀원 코드 유지
+    void deleteReport(Long reportId, String userId);
 }

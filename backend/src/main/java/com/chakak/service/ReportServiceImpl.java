@@ -152,9 +152,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public void deleteReport(Long reportId) {
-        Report report = repository.findById(reportId)
+	public void deleteReport(Long reportId, String userId) {
+		Report report = repository.findById(reportId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 제보입니다."));
+		
+        if (!report.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인만 삭제할 수 있습니다.");
+        }
 
         report.getReportImages().forEach(image -> {
             File file = new File(image.getImgPath());
