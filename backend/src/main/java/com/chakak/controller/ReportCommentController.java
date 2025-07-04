@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chakak.domain.Comment;
+import com.chakak.domain.User;
 import com.chakak.dto.request.ReportCommentRequest;
 import com.chakak.dto.response.ReportCommentResponse;
 import com.chakak.service.ReportCommentService;
@@ -32,18 +33,27 @@ public class ReportCommentController {
 	 * */
 	@PostMapping
 	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
-		Comment comment = new Comment(null, principal.getName(), commentDto.getContent(), null, null);
+		Comment comment = new Comment();
+		User user = new User();
+		user.setUserId(principal.getName());
+		comment.setContent(commentDto.getContent());
+		
 		Comment savedComment = service.save(comment, commentDto.getReportId());
 		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
 		return ResponseEntity.ok(commentList);
 	}
-	
+
 	/**
 	 * 제보 댓글 수정
 	 * */
 	@PutMapping
 	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
-		Comment comment = new Comment(commentDto.getCommentId(), principal.getName(), commentDto.getContent(), null, null);
+		Comment comment = new Comment();
+		User user = new User();
+		user.setUserId(principal.getName());
+		comment.setCommentId(commentDto.getCommentId());
+		comment.setContent(commentDto.getContent());
+
 		Comment updatedComment = service.update(comment, commentDto.getReportId());
 		
 		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());

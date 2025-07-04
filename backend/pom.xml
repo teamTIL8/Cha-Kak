@@ -9,6 +9,7 @@
 		<version>3.5.0</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.chakak</groupId>
 	<artifactId>chakak</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -25,6 +26,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		
+		<!-- 자동 재시작 -->
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-devtools</artifactId>
+		  <optional>true</optional> <!-- Restart를 원하지 않을 경우 false -->
 		</dependency>
 
 
@@ -111,26 +120,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- JWT -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>0.12.5</version>
-		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-impl</artifactId>
-			<version>0.12.5</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>0.12.5</version>
-			<scope>runtime</scope>
-		</dependency>
-
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>

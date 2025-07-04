@@ -19,7 +19,7 @@ public class ReportCommentResponse {
 	
 	public ReportCommentResponse (Comment comment) {
 		this.commentId = comment.getCommentId();
-		this.userId = comment.getUserId();
+		this.userId = comment.getUser() != null ? comment.getUser().getUserId() : null;
 		this.content = comment.getContent();
 		this.createdAt = comment.getCreatedAt();
 	}

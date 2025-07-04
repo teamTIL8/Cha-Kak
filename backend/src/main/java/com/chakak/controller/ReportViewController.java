@@ -4,18 +4,23 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.chakak.common.enums.Violation;
 import com.chakak.domain.Report;
 import com.chakak.domain.ReportImage;
+import com.chakak.dto.ReportDto;
 import com.chakak.dto.response.ReportCommentResponse;
 import com.chakak.dto.response.ReportResponse;
 import com.chakak.service.ReportCommentService;
 import com.chakak.service.ReportService;
+import org.springframework.data.domain.Pageable;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,29 +34,41 @@ public class ReportViewController {
 	/**
 	 * 불법 주정차 제보 목록 화면 이동
 	 * */
-	@GetMapping("/report/list")
-	public String listReports(Model model) {
-		List<Report> reportList = service.findAll();
-		
-		List<ReportResponse> reportDtoList = new ArrayList<>();
-		for(Report r : reportList) {
-			reportDtoList.add(new ReportResponse(r.getReportId(), 
-												 r.getTitle(), 
-												 r.getUserId(),
-												 r.getVehicleNumber(),
-												 r.getReportTime(),
-												 r.getViolationType(),
-												 r.getAddress(),
-												 r.getLatitude(),
-												 r.getLongitude(),
-												 r.getDescription()
-												 ));
-		}
-		
-		model.addAttribute("reportList", reportDtoList);
-		
-		return "report/report-list";
+	@GetMapping({"/report/list", "/report/all-list"})
+	public String listReports(
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "10") int size,
+	        @RequestParam(required = false) String carNumber,
+	        @RequestParam(required = false) String location,
+	        @RequestParam(required = false) String reportDate,
+	        @RequestParam(required = false) String violationType,
+	        @RequestParam(required = false) String startDate,
+	        @RequestParam(required = false) String endDate,
+	        @RequestParam(required = false) String keyword,
+	        Model model) {
+
+	    Pageable pageable = PageRequest.of(page, size);
+
+	    Page<ReportDto> reportPage = service.getAllReports(
+	        carNumber, location, reportDate, violationType, startDate, endDate, keyword, pageable
+	    );
+
+	    model.addAttribute("reportPage", reportPage);
+	    model.addAttribute("reportList", reportPage.getContent());
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("carNumber", carNumber);
+	    model.addAttribute("location", location);
+	    model.addAttribute("reportDate", reportDate);
+	    model.addAttribute("violationType", violationType);
+	    model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("keyword", keyword);
+
+	    return "report/report-list";
 	}
+
+
+
 	
 	/**
 	 * 불법 주정차 제보 신청 화면 이동
