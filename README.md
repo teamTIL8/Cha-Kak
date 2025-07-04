@@ -3,7 +3,10 @@
 
 ```
 불법 주정차 제보 게시판
-Kakao 지도 API를 활용하여 제보 위치를 기록하고, Spring Boot + Thymeleaf + JWT 인증을 통해 안전하게 운영되는 간단한 불법 주정차 제보 게시판입니다.
+
+Kakao 지도 API를 활용하여 제보 위치를 기록하고,
+Spring Boot + Thymeleaf + JWT 인증을 통해 안전하게 운영되는
+간단한 불법 주정차 제보 게시판입니다.
 ```
 
 <br>
@@ -109,11 +112,15 @@ Kakao 지도 API를 활용하여 제보 위치를 기록하고, Spring Boot + Th
     - 필터링: 차량 번호, 위치, 신고일 기준
     - 마이페이지를 통해 내가 제보한 글, 반응한 글 목록, 댓글 관리
 
+<br>
+
 ### ⛑️ 관리자 기능
 - 전체 제보 리스트 조회/상세 분석
 - 제보된 차량 번호 중복 이력 조회
 - 지역/시간대/유형 기반 통계 확인
 - 공지사항 및 가이드 등록/조회/수정/삭제
+
+<br>
 
 ### 📊 통계 기능
 - 지역별 제보 히트맵 시각화
@@ -128,4 +135,22 @@ Kakao 지도 API를 활용하여 제보 위치를 기록하고, Spring Boot + Th
 <br>
 
 ## 🚩 프로젝트 설치 및 실행
-(프로젝트 완성 후 추가)
+
+### 1. 프로젝트 클론
+```bash
+git clone https://github.com/user_name/project_name.git
+cd project_name
+```
+
+### 2. DB 및 환경설정
+(프로젝트 완성 후 추가 작성)
+
+### 3. 프로젝트 빌드 및 실행
+```bash
+mvn clean install         # Maven 빌드
+mvn spring-boot:run       # Spring Boot 실행
+```
+
+### 4. 접속
+> 기본 포트 : http://localhost:8080
+(프로젝트 완성 후 추가 작성)
