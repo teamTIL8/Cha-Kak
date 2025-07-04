@@ -63,7 +63,7 @@ public class ReportController {
         return ResponseEntity.ok("Files Uploaded");
     }
 	
-<<<<<<< HEAD
+
 	
 	
 	// ✅ 전체 신고 목록 조회 or 필터링 조회 ( 차량 번호 , 위치 , 상태 , 글 쓴 날짜 , 기간 ( startDate , endDate) , 키워드 )
@@ -104,15 +104,15 @@ public class ReportController {
 		    ReportDto report = reportService.getReport(id);
 	        return ResponseEntity.ok(report);
 	    }
-}
-=======
-	/**
-	 * 제보 신청 내역 수정
-	 * */
+
+
+	
+	  // ✅ 제보 신청 내역 수정
+	
 	@PutMapping("/{reportId}")
 	public ResponseEntity<?> updateReport(@PathVariable Long reportId, @RequestBody ReportRequest reportDto) {
 	    // 1. 수정할 대상 조회
-	    Report report = service.findById(reportId);
+	    Report report = reportService.findById(reportId);
 	    if (report == null) {
 	        return ResponseEntity.notFound().build(); // 없는 경우 404 반환
 	    }
@@ -128,10 +128,10 @@ public class ReportController {
 	    report.setLongitude(reportDto.getLongitude());
 
 	    // 3. 저장
-	    Report updatedReport = service.save(report);
+	    Report updatedReport = reportService.save(report);
 
 	    // 4. 결과 반환
 	    return ResponseEntity.ok(updatedReport.getReportId());
 	}
 }
->>>>>>> main
+
