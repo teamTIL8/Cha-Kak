@@ -1,9 +1,18 @@
 package com.chakak.domain;
 
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+=======
+import java.util.List;
+
+import com.chakak.common.enums.Violation;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+>>>>>>> main
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,6 +32,7 @@ public class Comment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long commentId;
 	
+<<<<<<< HEAD
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "REPORT_ID")  // 대문자 맞춤
 	private Report report;
@@ -34,4 +44,13 @@ public class Comment {
 	private String content;
 	private LocalDateTime createdAt = LocalDateTime.now();
 	private LocalDateTime updatedAt = LocalDateTime.now();
+=======
+	private String userId;
+	private String content;
+	private LocalDateTime createdAt;
+	
+	@ManyToOne
+	@JoinColumn(name = "REPORT_ID")
+	private Report report;
+>>>>>>> main
 }

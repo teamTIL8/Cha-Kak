@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.chakak.common.enums.Violation;
 import com.chakak.domain.Report;
 import com.chakak.domain.ReportImage;
+import com.chakak.dto.response.ReportCommentResponse;
 import com.chakak.dto.response.ReportResponse;
+import com.chakak.service.ReportCommentService;
 import com.chakak.service.ReportService;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ReportViewController {
 	
 	private final ReportService service;
+	private final ReportCommentService commentSerivce;
 	
 	/**
 	 * 불법 주정차 제보 목록 화면 이동
@@ -112,8 +114,12 @@ public class ReportViewController {
 		
 		List<ReportImage> reportImages = report.getReportImages();
 		
+		// 댓글 조회
+		List<ReportCommentResponse> comments = commentSerivce.findByReportId(reportId);
+		
 		model.addAttribute("report", reportResponse);
 		model.addAttribute("reportImages", reportImages);
+		model.addAttribute("comments", comments);
 		
 		return "report/report-detail";
 	}

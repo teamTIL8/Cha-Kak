@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원정보 수정 - Chakak</title>
+	<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+	<!-- 네비게이션 바 -->
+	<nav class="navbar">
+		<div class="container">
+			<a class="navbar-brand" href="/">🏠 Chakak</a>
+			<div class="navbar-nav" th:if="${user != null}">
+				<span class="navbar-text">안녕하세요, <strong th:text="${user.name}"></strong>님!</span>
+				<a class="nav-link" href="/">홈</a>
+				<a class="nav-link" th:href="@{/mypage}">마이페이지</a>
+				<form style="display: inline;" th:action="@{/logout}" method="post">
+					<button type="submit" class="btn secondary">로그아웃</button>
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<!-- 메인 컨텐츠 -->
+	<div class="container">
+		<div class="card">
+			<div class="card-header">
+				<h1>✏️ 회원정보 수정</h1>
+			</div>
+			<div class="card-body">
+				<!-- 성공 메시지 -->
+				<div th:if="${message}" class="success-message">
+					<span th:text="${message}"></span>
+				</div>
+
+				<form th:action="@{/edit}" th:object="${updateDto}" method="post" id="profileForm"
+					class="form-container">
+					<!-- 기본 정보 섹션 -->
+					<h3>📋 기본 정보</h3>
+
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+						<div class="form-group">
+							<label for="email">이메일</label>
+							<input type="email"
+								th:class="${#fields.hasErrors('email')} ? 'form-control error' : 'form-control'"
+								id="email" th:field="*{email}" placeholder="이메일을 입력하세요">
+							<div class="invalid-feedback" th:if="${#fields.hasErrors('email')}">
+								<span th:errors="*{email}"></span>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="name">이름</label>
+							<input type="text"
+								th:class="${#fields.hasErrors('name')} ? 'form-control error' : 'form-control'"
+								id="name" th:field="*{name}" placeholder="이름을 입력하세요">
+							<div class="invalid-feedback" th:if="${#fields.hasErrors('name')}">
+								<span th:errors="*{name}"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- 보안 인증 섹션 -->
+					<h3>🔒 보안 인증</h3>
+
+					<div class="form-group">
+						<label for="currentPassword">현재 비밀번호 <span style="color: #e74c3c;">*</span></label>
+						<input type="password"
+							th:class="${#fields.hasErrors('currentPassword')} ? 'form-control error' : 'form-control'"
+							id="currentPassword" th:field="*{currentPassword}" placeholder="현재 비밀번호를 입력하세요" required>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('currentPassword')}">
+							<span th:errors="*{currentPassword}"></span>
+						</div>
+						<div class="form-text">
+							ℹ️ 정보 수정을 위해 현재 비밀번호 확인이 필요합니다.
+						</div>
+					</div>
+
+					<!-- 비밀번호 변경 섹션 -->
+					<div class="checkbox-container">
+						<input type="checkbox" id="changePasswordCheck" name="changePassword" value="true">
+						<label for="changePasswordCheck">
+							<strong>🔑 비밀번호도 함께 변경하기</strong>
+						</label>
+					</div>
+
+					<div id="passwordSection" class="password-section" style="display: none;">
+						<h3>🔐 새 비밀번호 설정</h3>
+
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+							<div class="form-group">
+								<label for="password">새 비밀번호 <span style="color: #e74c3c;">*</span></label>
+								<input type="password"
+									th:class="${#fields.hasErrors('password')} ? 'form-control error' : 'form-control'"
+									id="password" th:field="*{password}" placeholder="새 비밀번호 (6자 이상)">
+								<div class="invalid-feedback" th:if="${#fields.hasErrors('password')}">
+									<span th:errors="*{password}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="passwordConfirm">새 비밀번호 확인 <span style="color: #e74c3c;">*</span></label>
+								<input type="password" class="form-control" id="passwordConfirm"
+									placeholder="새 비밀번호를 다시 입력하세요">
+								<div class="invalid-feedback" id="passwordConfirmError" style="display: none;">
+									비밀번호가 일치하지 않습니다.
+								</div>
+							</div>
+						</div>
+
+						<div class="warning-message">
+							⚠️ 새 비밀번호는 현재 비밀번호와 다르게 설정해주세요.
+						</div>
+					</div>
+
+					<div class="button-group">
+						<a th:href="@{/mypage}" class="button secondary">취소</a>
+						<button type="submit" class="button success" id="submitBtn">✅ 수정하기</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- 현재 사용자 정보 표시 -->
+		<div class="card" th:if="${user != null}">
+			<div class="card-header">
+				<h3>ℹ️ 현재 계정 정보</h3>
+			</div>
+			<div class="card-body">
+				<div class="user-info">
+					<p><strong>사용자 ID:</strong> <span th:text="${user.userId}"></span></p>
+					<p><strong>현재 이메일:</strong> <span th:text="${user.email}"></span></p>
+					<p><strong>현재 이름:</strong> <span th:text="${user.name}"></span></p>
+					<p><strong>권한:</strong> <span th:text="${user.role}"></span></p>
+					<p><strong>가입일:</strong> <span
+							th:text="${#temporals.format(user.createdAt, 'yyyy년 MM월 dd일 HH:mm')}"></span></p>
+					<p><strong>최종 수정일:</strong> <span
+							th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy년 MM월 dd일 HH:mm') : '없음'}"></span>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 비밀번호 변경 체크박스 이벤트
+		document.getElementById('changePasswordCheck').addEventListener('change', function () {
+			const passwordSection = document.getElementById('passwordSection');
+			const passwordField = document.getElementById('password');
+			const passwordConfirmField = document.getElementById('passwordConfirm');
+
+			if (this.checked) {
+				passwordSection.style.display = 'block';
+			} else {
+				passwordSection.style.display = 'none';
+				passwordField.value = '';
+				passwordConfirmField.value = '';
+				passwordField.classList.remove('error', 'success');
+				passwordConfirmField.classList.remove('error', 'success');
+			}
+		});
+
+		// 비밀번호 확인 검증
+		function validatePasswordConfirm() {
+			const password = document.getElementById('password').value;
+			const passwordConfirm = document.getElementById('passwordConfirm').value;
+			const passwordConfirmField = document.getElementById('passwordConfirm');
+			const errorDiv = document.getElementById('passwordConfirmError');
+
+			if (password && passwordConfirm) {
+				if (password === passwordConfirm) {
+					passwordConfirmField.classList.remove('error');
+					passwordConfirmField.classList.add('success');
+					errorDiv.style.display = 'none';
+					return true;
+				} else {
+					passwordConfirmField.classList.remove('success');
+					passwordConfirmField.classList.add('error');
+					errorDiv.style.display = 'block';
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// 실시간 비밀번호 확인 검증
+		document.getElementById('password').addEventListener('input', validatePasswordConfirm);
+		document.getElementById('passwordConfirm').addEventListener('input', validatePasswordConfirm);
+
+		// 폼 제출 시 추가 검증
+		document.getElementById('profileForm').addEventListener('submit', function (e) {
+			const changePasswordCheck = document.getElementById('changePasswordCheck');
+			const currentPassword = document.getElementById('currentPassword').value.trim();
+
+			if (!currentPassword) {
+				alert('보안을 위해 현재 비밀번호를 입력해주세요.');
+				e.preventDefault();
+				return;
+			}
+
+			if (changePasswordCheck.checked) {
+				const newPassword = document.getElementById('password').value.trim();
+
+				if (!newPassword) {
+					alert('새 비밀번호를 입력해주세요.');
+					e.preventDefault();
+					return;
+				}
+
+				if (!validatePasswordConfirm()) {
+					e.preventDefault();
+					alert('새 비밀번호 확인이 일치하지 않습니다.');
+					return;
+				}
+
+				if (currentPassword === newPassword) {
+					e.preventDefault();
+					alert('새 비밀번호는 현재 비밀번호와 달라야 합니다.');
+					return;
+				}
+			}
+		});
+
+		// 페이지 로드 시 에러가 있으면 비밀번호 섹션 표시
+		document.addEventListener('DOMContentLoaded', function () {
+			const hasPasswordErrors = document.querySelector('.invalid-feedback [th\\:errors*="password"]');
+
+			if (hasPasswordErrors) {
+				document.getElementById('changePasswordCheck').checked = true;
+				document.getElementById('passwordSection').style.display = 'block';
+			}
+		});
+	</script>
+</body>
+
+</html>
