@@ -143,7 +143,55 @@ cd project_name
 ```
 
 ### 2. DB 및 환경설정
-(프로젝트 완성 후 추가 작성)
+`src\main\resources` 경로에 `application.properties` 파일 생성 후 아래와 같이 작성
+```bash
+spring.application.name=ChaKak
+
+# MySQL Datasource
+spring.datasource.url=jdbc:mysql://localhost:3306/schema_name?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+spring.datasource.username=username
+spring.datasource.password=password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+
+# Logging
+logging.level.org.hibernate.SQL=debug
+logging.level.org.hibernate.type.descriptor.sql.BasicExtractor=trace
+
+# Thymeleaf Cache
+spring.thymeleaf.cache=false
+
+# JWT Configuration
+jwt.secret=myVerySecretKeyForJWTTokenGenerationThatShouldBeLongEnough
+jwt.expiration=86400000
+
+#server    포트 변경 시, 작성
+server.port=port_number
+```
+
+<br>
+
+아래의 의존성이 포함되었는지 확인
+| Dependency | Version | 기능 설명 |
+|------------|---------|-----------|
+| `spring-boot-starter-web` | 3.5.0 | 기본 웹 MVC, REST API |
+| `spring-boot-devtools` | 3.5.0 | 개발용 자동 재시작 & LiveReload |
+| `spring-boot-starter-thymeleaf` | 3.5.0 | Thymeleaf 템플릿 엔진 연동 |
+| `spring-boot-starter-data-jpa` | 3.5.0 | Spring Data JPA ORM 사용 |
+| `mysql-connector-j` (runtime) | 9.2.0 | MySQL DB 드라이버 |
+| `spring-boot-starter-security` | 3.5.0 | Spring Security (인증/인가) |
+| `jjwt-api` | 0.12.5 | JWT 토큰 API |
+| `jjwt-impl` | 0.12.5 | JWT 내부 구현체 |
+| `jjwt-jackson` | 0.12.5 | JWT 파싱 Jackson 모듈 |
+| `spring-boot-starter-validation` | 3.5.0 | Bean Validation (입력값 검증) |
+| `lombok` (provided) | 1.18.38 | Getter/Setter 등 보일러플레이트 제거 |
+| `thymeleaf-extras-springsecurity6` | 3.1.3 | Thymeleaf에서 Security 속성 사용 |
+
 
 ### 3. 프로젝트 빌드 및 실행
 ```bash
@@ -152,5 +200,6 @@ mvn spring-boot:run       # Spring Boot 실행
 ```
 
 ### 4. 접속
-> 기본 포트 : http://localhost:8080
-(프로젝트 완성 후 추가 작성)
+> 기본 포트 : http://localhost:port <br>
+
+---
