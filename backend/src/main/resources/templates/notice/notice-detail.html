@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>공지 상세보기</title>
+	<style>
+		* {
+			margin: 0px;
+			padding: 0px;
+		}
+
+		h5 {
+			margin: 2px;
+		}
+
+		.wrapper {
+			width: 1280px;
+			height: 800px;
+		}
+
+		.sidebar {
+			width: 200px;
+			height: 800px;
+			border-right: 1px solid black;
+			float: left;
+			padding: 10px;
+		}
+
+		.content {
+			width: auto;
+			height: 800px;
+			float: left;
+			padding: 10px;
+		}
+
+		.clear {
+			clear: both;
+		}
+
+		.menu {
+			margin: 8px;
+		}
+
+		.menu li {
+			list-style-type: none;
+			cursor: pointer;
+		}
+
+		.table-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 20px;
+		}
+
+		.report-button {
+			padding: 8px 16px;
+			background-color: #4CAF50;
+			color: white;
+			text-decoration: none;
+			border-radius: 4px;
+			font-size: 14px;
+		}
+
+		.report-button:hover {
+			background-color: #45a049;
+		}
+
+		.notice-meta {
+			font-size: 14px;
+			margin: 10px 0;
+		}
+
+		.notice-meta strong {
+			display: inline-block;
+			width: 70px;
+		}
+
+		.notice-content {
+			margin: 20px 0;
+			padding: 12px;
+			background-color: #f9f9f9;
+			border: 1px solid #ddd;
+			white-space: pre-wrap;
+		}
+
+		.action-buttons {
+			margin-top: 20px;
+		}
+
+		.action-buttons a,
+		.action-buttons button {
+			display: inline-block;
+			margin-right: 10px;
+			padding: 8px 16px;
+			font-size: 14px;
+			border-radius: 4px;
+			border: none;
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+		.action-buttons a {
+			background-color: #4CAF50;
+			color: white;
+		}
+
+		.action-buttons button {
+			background-color: #f44336;
+			color: white;
+		}
+
+		.action-buttons a:hover {
+			background-color: #45a049;
+		}
+
+		.action-buttons button:hover {
+			background-color: #e53935;
+		}
+	</style>
+
+	<script th:inline="javascript">
+		function deleteNotice(noticeId) {
+			if (!confirm("정말 삭제하시겠습니까?")) return;
+
+			fetch(`/api/notice/${noticeId}`, {
+				method: 'DELETE'
+			})
+				.then(res => {
+					if (!res.ok) throw new Error("삭제 실패");
+					alert("삭제되었습니다.");
+					location.href = "/notice/list";
+				})
+				.catch(err => {
+					console.error(err);
+					alert("오류 발생: " + err.message);
+				});
+		}
+
+		// 조회수 증가 요청
+		window.addEventListener("DOMContentLoaded", () => {
+
+			const userInfo = /*[[${#authentication.principal.role}]]*/ '';
+			console.log(userInfo);
+			const noticeId = /*[[${notice.noticeId}]]*/ 0;
+
+			const viewCountEl = document.getElementById("viewCount");
+			const originalCount = parseInt(viewCountEl.textContent);
+			viewCountEl.textContent = originalCount + 1;
+
+			fetch(`/api/notice/${noticeId}/view`, {
+				method: 'PUT'
+			}).catch(err => {
+				console.error("조회수 증가 실패:", err);
+			});
+		});
+	</script>
+</head>
+
+<body>
+	<div class="wrapper">
+		<div class="sidebar">
+			<div class="menu">
+				<h3>제보</h3>
+				<ul>
+					<li onclick="location.href='/report/new'">제보 신청</li>
+					<li onclick="location.href='/report/list'">제보 조회</li>
+					<li>제보 내역</li>
+				</ul>
+			</div>
+			<div class="menu">
+				<h3>마이페이지</h3>
+				<ul>
+					<li>나의 정보</li>
+					<li>신고 평가</li>
+				</ul>
+			</div>
+			<div class="menu">
+				<h3>공지사항</h3>
+				<ul>
+					<li onclick="location.href='/notice/list'">공지 목록</li>
+					<li onclick="location.href='/notice/new'">공지 작성</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="content">
+			<h1 th:text="${notice.title}">공지 제목</h1>
+
+			<div class="notice-meta">
+				<p><strong>작성자:</strong> <span th:text="${notice.createdUser.userId}">admin</span></p>
+				<p><strong>작성일:</strong> <span
+						th:text="${#temporals.format(notice.created_at, 'yyyy-MM-dd HH:mm')}">2025-07-03</span></p>
+
+				<div th:if="${notice.updatedUser != null}">
+					<p><strong>수정자:</strong> <span th:text="${notice.updatedUser.userId}">admin</span></p>
+					<p><strong>수정일:</strong> <span
+							th:text="${#temporals.format(notice.updated_at, 'yyyy-MM-dd HH:mm')}">2025-07-03</span></p>
+				</div>
+
+				<p><strong>조회수:</strong> <span id="viewCount" th:text="${notice.view_count}">0</span></p>
+			</div>
+
+			<hr>
+
+			<div class="notice-content" th:text="${notice.content}">공지 내용이 여기에 출력됩니다.</div>
+
+			<hr>
+
+			<div class="action-buttons">
+				<a th:href="@{|/notice/${notice.noticeId}/edit|}">수정</a>
+				<button type="button" th:onclick="|deleteNotice(${notice.noticeId})|">삭제</button>
+				<a href="/notice/list" style="background-color: #888;">목록</a>
+			</div>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+</body>
+
+</html>

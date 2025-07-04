@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.chakak.common.enums.Violation;
 import com.chakak.domain.Report;
 import com.chakak.dto.response.FrequentAddressDto;
 import com.chakak.dto.response.ReportCoordinateDto;
@@ -60,4 +61,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     	    WHERE latitude IS NOT NULL AND longitude IS NOT NULL
     	""", nativeQuery = true)
     List<ReportCoordinateDto> getAllReportCoordinates();
+
+	List<Report> findByViolationType(Violation violationType);
 }

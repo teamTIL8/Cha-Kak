@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${mode == 'edit'} ? '공지 수정' : '공지 작성'">공지</title>
+	<style>
+		* {
+			margin: 0px;
+			padding: 0px;
+		}
+
+		h5 {
+			margin: 2px;
+		}
+
+		.wrapper {
+			width: 1280px;
+			height: 800px;
+		}
+
+		.sidebar {
+			width: 200px;
+			height: 800px;
+			border-right: 1px solid black;
+			float: left;
+			padding: 10px;
+		}
+
+		.content {
+			width: auto;
+			height: 800px;
+			float: left;
+			padding: 10px;
+		}
+
+		.clear {
+			clear: both;
+		}
+
+		.menu {
+			margin: 8px;
+		}
+
+		.menu li {
+			list-style-type: none;
+			cursor: pointer;
+		}
+
+		form {
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+			max-width: 600px;
+			margin-top: 20px;
+		}
+
+		input[type="text"],
+		textarea {
+			padding: 10px;
+			margin-bottom: 15px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			resize: vertical;
+		}
+
+		button[type="submit"] {
+			width: 120px;
+			padding: 10px;
+			font-size: 14px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		button[type="submit"]:hover {
+			background-color: #45a049;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<div class="sidebar">
+			<div class="menu">
+				<h3>제보</h3>
+				<ul>
+					<li onclick="location.href='/report/new'">제보 신청</li>
+					<li onclick="location.href='/report/list'">제보 조회</li>
+					<li>제보 내역</li>
+				</ul>
+			</div>
+			<div class="menu">
+				<h3>마이페이지</h3>
+				<ul>
+					<li>나의 정보</li>
+					<li>신고 평가</li>
+				</ul>
+			</div>
+			<div class="menu">
+				<h3>공지사항</h3>
+				<ul>
+					<li onclick="location.href='/notice/list'">공지 목록</li>
+					<li onclick="location.href='/notice/new'">공지 작성</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="content">
+			<h1 th:text="${mode == 'edit'} ? '공지 수정' : '공지 작성'">공지 등록</h1>
+
+			<form id="noticeForm">
+				<input type="text" id="title" name="title" th:value="${notice.title}" placeholder="제목" required>
+				<textarea id="content" name="content" placeholder="내용을 입력하세요" rows="12" required
+					th:text="${notice.content}"></textarea>
+				<button type="submit" th:text="${mode == 'edit'} ? '수정' : '등록'">등록</button>
+			</form>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+
+	<script th:inline="javascript">
+		const form = document.getElementById('noticeForm');
+
+		form.addEventListener('submit', function (e) {
+			e.preventDefault();
+
+			const userId = /*[[${#authentication.name}]]*/ '';
+			const isEdit = /*[[${mode == 'edit'}]]*/ false;
+			const noticeId = /*[[${notice.noticeId}]]*/ null;
+
+			const data = {
+				title: document.getElementById("title").value,
+				content: document.getElementById("content").value,
+				...(isEdit
+					? {updatedUser: {userId: userId}}
+					: {createdUser: {userId: userId}})
+			};
+
+			const url = isEdit ? `/api/notice/${noticeId}` : '/api/notice';
+			const method = isEdit ? 'PUT' : 'POST';
+
+			fetch(url, {
+				method: method,
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(data)
+			})
+				.then(res => {
+					if (!res.ok) throw new Error('서버 오류');
+					return res.text();
+				})
+				.then(() => {
+					alert(isEdit ? '수정 완료' : '등록 완료');
+					location.href = '/notice/list';
+				})
+				.catch(err => {
+					console.error(err);
+					alert('오류 발생: ' + err.message);
+				});
+		});
+	</script>
+</body>
+
+</html>
