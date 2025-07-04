@@ -19,12 +19,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user") // ✔ main 브랜치의 설정 유지
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = NOW() WHERE user_id = ?")
+@SQLDelete(sql = "UPDATE user SET is_deleted = true, deleted_at = NOW() WHERE user_id = ?")
 @Where(clause = "is_deleted = false")
 public class User implements UserDetails {
 
@@ -112,7 +112,6 @@ public class User implements UserDetails {
         this.deletedAt = null;
     }
 
-    // Role enum은 별도의 패키지에 있으면 import 하시고, 없으면 아래처럼 선언하세요
     public enum Role {
         USER, ADMIN
     }

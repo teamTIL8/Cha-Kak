@@ -42,7 +42,7 @@ public class ReportServiceImpl implements ReportService {
         String address = report.getAddress();
         String locationType = AddressUtils.extractRegion(address);
         report.setLocationType(locationType);
-
+        
         return repository.save(report);
     }
 
@@ -87,9 +87,24 @@ public class ReportServiceImpl implements ReportService {
 
         Specification<Report> spec = Specification.where(null);
 
-        spec = spec.and(ReportSpecification.carNumberContains(carNumber))
-                .and(ReportSpecification.locationContains(location))
-                .and(ReportSpecification.violationTypeEquals(violationType));
+       
+        // 차량 번호 검색 조건 추가
+        if (carNumber != null && !carNumber.isEmpty()) { // 변경: carNumber가 있을 때만 조건 추가
+            spec = spec.and(ReportSpecification.carNumberContains(carNumber));
+        }
+
+        // 위치 검색 조건 추가
+        if (location != null && !location.isEmpty()) { // 변경: location이 있을 때만 조건 추가
+            spec = spec.and(ReportSpecification.locationContains(location));
+        }
+
+        // 위반 유형 검색 조건 추가
+        // violationType은 이미 파싱되었으므로 null 여부만 체크합니다.
+        if (violationType != null) { // 변경: violationType이 있을 때만 조건 추가
+            spec = spec.and(ReportSpecification.violationTypeEquals(violationType));
+        }
+        // --- 수정 끝 ---
+
 
         if (reportDate != null) {
             spec = spec.and(ReportSpecification.reportDateEquals(reportDate));
@@ -97,7 +112,13 @@ public class ReportServiceImpl implements ReportService {
             spec = spec.and(ReportSpecification.reportDateBetween(startDate, endDate));
         }
 
-        spec = spec.and(ReportSpecification.keywordContains(keyword));
+        // --- 수정 시작 ---
+        // 키워드 검색 조건 추가
+        // keyword가 있을 때만 조건 추가합니다.
+        if (keyword != null && !keyword.isEmpty()) { // 변경: keyword가 있을 때만 조건 추가
+            spec = spec.and(ReportSpecification.keywordContains(keyword));
+        }
+        // --- 수정 끝 ---
 
         Page<Report> reportPage = repository.findAll(spec, pageable);
 
@@ -137,7 +158,7 @@ public class ReportServiceImpl implements ReportService {
     public ReportDto getReportDetail(Long id) {
         Report report = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 신고 없음"));
-        report.setViewCount(report.getViewCount() + 1);
+        report.setViewCount(report.getViewCount() + 1); // 조회수 증가 로직은 여기서도 필요
         return ReportDto.fromEntity(report);
     }
 }

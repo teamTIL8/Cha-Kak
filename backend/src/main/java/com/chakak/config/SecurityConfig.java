@@ -1,5 +1,6 @@
 package com.chakak.config;
 
+import com.chakak.service.CustomUserDetailsService;
 import com.chakak.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -77,7 +78,7 @@ public class SecurityConfig {
 
                     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         try {
-                            UserDetailsService userDetailsService = applicationContext.getBean(UserDetailsService.class);
+                            UserDetailsService userDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
                             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                             log.debug("Loaded user details: {}", userDetails.getUsername());
 
@@ -129,6 +130,7 @@ public class SecurityConfig {
                                 "/js/**", "/images/**", "/favicon.ico")
                         .permitAll()
                         .requestMatchers("/mypage", "/edit", "/withdraw").authenticated()
+                        .requestMatchers("/api/reports/**", "/api/comments/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -140,5 +142,9 @@ public class SecurityConfig {
                         .deleteCookies("token"));
 
         return http.build();
-    }
+        
+      
+     }
+   
+    
 }

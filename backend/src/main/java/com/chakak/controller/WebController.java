@@ -29,7 +29,7 @@ public class WebController {
     @Autowired
     private CommentService commentService; 
     // 루트 페이지 또는 신고 목록 페이지 (Thymeleaf 사용)
-    @GetMapping({"/all-list"})
+    /*@GetMapping({"/all-list"})
     public String getAllReports(
             @RequestParam(required = false) String carNumber,
             @RequestParam(required = false) String location,
@@ -60,7 +60,7 @@ public class WebController {
         model.addAttribute("keyword", keyword);
 
         return "report/report-list"; 
-    }
+    }*/
 
 
     // 신고 상세 페이지 (Thymeleaf 사용)
@@ -80,7 +80,7 @@ public class WebController {
         String userId = userDetails.getUsername();
         List<ReportDto> myReports = reportService.getMyReports(userId);
         model.addAttribute("myReports", myReports);
-        return "my/reports"; 
+        return  "report/my/reports";
     }
 
   
