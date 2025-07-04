@@ -81,4 +81,7 @@ public class Report {
 	
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReportImage> reportImages = new ArrayList<>();
+
+	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<Comment> comments = new ArrayList<>();
 }
