@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.chakak.common.constants.Role;
+
 import com.chakak.domain.Report;
 import com.chakak.domain.User;
 import com.chakak.dto.response.UserDto;
@@ -36,7 +36,7 @@ public class AdminUserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("유저 없음"));
 
-        if (user.getRole() != Role.USER) {
+        if (user.getRole() != User.Role.USER) {
             throw new RuntimeException("일반 사용자만 신고글 이력이 조회됩니다.");
         }
 

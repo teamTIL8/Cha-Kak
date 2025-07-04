@@ -20,7 +20,7 @@ import com.chakak.service.CommentService;
 import com.chakak.service.ReportService;
 
 @Controller 
-@RequestMapping("/") 
+@RequestMapping("/report") 
 public class WebController {
 
     @Autowired
@@ -29,7 +29,7 @@ public class WebController {
     @Autowired
     private CommentService commentService; 
     // 루트 페이지 또는 신고 목록 페이지 (Thymeleaf 사용)
-    @GetMapping({"/", "/report/list"})
+    @GetMapping({"/all-list"})
     public String getAllReports(
             @RequestParam(required = false) String carNumber,
             @RequestParam(required = false) String location,
@@ -64,7 +64,7 @@ public class WebController {
 
 
     // 신고 상세 페이지 (Thymeleaf 사용)
-    @GetMapping("/report/view/{reportId}")
+    @GetMapping("/view/{reportId}")
     public String getReportDetail(@PathVariable Long reportId, Model model) {
         // ReportDetailDto 대신 ReportDto를 사용하도록 변경
         ReportDto reportDetail = reportService.getReportDetail(reportId); // 상세 정보 가져오기

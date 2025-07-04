@@ -33,7 +33,7 @@ public class ReportServiceImpl implements ReportService {
     public Report save(Report report) {
         // 간접세터 setUserId() 사용
         String userId = report.getUserId();
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자"));
 
         report.setUser(user); // 영속 상태로 다시 교체
