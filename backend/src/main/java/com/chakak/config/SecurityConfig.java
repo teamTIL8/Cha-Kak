@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +32,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
 
@@ -76,6 +77,8 @@ public class SecurityConfig {
 				if (token != null && jwtUtil.validateToken(token)) {
 					String username = jwtUtil.extractUsername(token);
 					log.debug("Token username: {}", username);
+					
+					
 
 					if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 						try {
@@ -123,6 +126,7 @@ public class SecurityConfig {
 			}
 		};
 	}
+	
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -131,7 +135,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/", "/login", "/register", "/check-userid", "/check-email", "/css/**",
 								"/js/**", "/images/**", "/favicon.ico")
-						.permitAll().requestMatchers("/mypage", "/edit", "/withdraw")
+						.permitAll()
+						.requestMatchers("/mypage", "/edit", "/withdraw")
 						.authenticated().anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable)
@@ -140,4 +145,6 @@ public class SecurityConfig {
 
 		return http.build();
 	}
+
+	
 }
