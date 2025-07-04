@@ -200,6 +200,6 @@ mvn spring-boot:run       # Spring Boot 실행
 ```
 
 ### 4. 접속
-> 기본 포트 : http://localhost:port <br>
+> localhost의 설정한 포트로 접속 : http://localhost:port <br>
 
 ---
