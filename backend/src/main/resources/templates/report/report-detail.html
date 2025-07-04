@@ -15,7 +15,6 @@
 		#description{width:300px;height:100px;}
 		.container{margin-bottom:10px;}
 
-	   
 	    .comment-list {
 	        margin-top: 20px;
 	    }
@@ -75,7 +74,7 @@
 	        background-color: #c82333;
 	    }
 
-		/* 네가 추가한 신고 상세 스타일 */
+		/* 신고 상세 스타일 */
 		.report-detail {
 			border: 1px solid #ddd;
 			padding: 20px;
@@ -114,7 +113,8 @@
 			<div class="menu">
 				<h3>마이페이지</h3>
 				<ul>
-					<li onclick="location.href='/report/my/reports'">나의 정보</li> <li>신고 평가</li>
+					<li onclick="location.href='/report/my/reports'">나의 정보</li>
+					<li>신고 평가</li>
 					<li>신고 평가</li>
 				</ul>
 			</div>
@@ -126,7 +126,7 @@
 			<hr>
 			<div>
 				<button type="button" class="edit-btn" 
-				 		 th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
+					th:onclick="|location.href='/report/edit/${report.reportId}'|">수정
 				</button>
 				<button type="button" class="delete-btn"
 						th:onclick="|deleteReport(${report.reportId});|">삭제
@@ -363,7 +363,6 @@
 		    });
 		}
 
-<<<<<<< HEAD
 		// 시간 포맷 변경 함수 (yyyy-MM-dd HH:mm)
 		function formatDateTime(dateTimeString) {
 		    const formattedString = dateTimeString.replace('T', ' ');
@@ -375,51 +374,30 @@
 		    const minutes = ('0' + date.getMinutes()).slice(-2);
 		    return `${year}-${month}-${day} ${hours}:${minutes}`;
 		}
+		
+		// 제보 삭제
+		async function deleteReport() {
+			if(!confirm('삭제 하시겠습니까?')){
+				return false;
+			}
+			
+			const reportId = /*[[${report.reportId}]]*/ 0;
+		    try {
+			    const response = await fetch('/api/reports/' + reportId, {
+			        method: 'DELETE',
+			        headers: { 'Content-Type': 'application/json' },
+			    });
+		
+			    if (response.ok) {
+			        alert('제보가 삭제되었습니다.');
+					window.location.href='/report/list';
+			    } else {
+			        alert('제보 삭제 중 오류가 발생하였습니다.');
+			    }
+			}catch {
+				alert('네트워크 오류가 발생하였습니다.');
+			}
+		}
 	</script>	
 </body>
 </html>
-=======
-	    const date = new Date(formattedString);
-
-	    const year = date.getFullYear();
-	    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-	    const day = ('0' + date.getDate()).slice(-2);
-
-	    const hours = ('0' + date.getHours()).slice(-2);
-	    const minutes = ('0' + date.getMinutes()).slice(-2);
-
-	    return `${year}-${month}-${day} ${hours}:${minutes}`;
-	}
-	
-	// 제보 삭제
-	async function deleteReport() {
-		
-		if(!confirm('삭제 하시겠습니까?')){
-			return false;
-		}
-		
-		const reportId = /*[[${report.reportId}]]*/ 0;
-	    const commentData = {
-			reportId: reportId,
-	        userId: 'test1234' // 사용자 ID
-	    };
-		try {
-			
-		    const response = await fetch('/api/reports/' + reportId, {
-		        method: 'DELETE',
-		        headers: { 'Content-Type': 'application/json' },
-		    });
-	
-		    if (response.ok) {
-		        alert('제보가 삭제되었습니다.');
-				window.location.href='/report/list';
-		    } else {
-		        alert('제보 삭제 중 오류가 발생하였습니다.');
-		    }
-		}catch{
-			alert('네트워크 오류가 발생하였습니다.');
-		}
-	}
-</script>	
-</html>
->>>>>>> main
