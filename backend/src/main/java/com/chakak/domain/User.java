@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "users") // 테이블 이름은 직접 명시하거나, 필요시 상수로 관리
+@Table(name = "user") // 테이블 이름은 직접 명시하거나, 필요시 상수로 관리
 @Data // @Getter, @Setter 등을 포함하므로 @Getter, @Setter는 제거
 @Builder
 @NoArgsConstructor
