@@ -3,6 +3,52 @@
 <head>
     <title>관리자 대시보드</title>
     <meta charset="UTF-8">
+	<style>
+		.info-title {
+			position: relative;
+			display: inline-block;
+			z-index: 9999; /* 항상 위에 보이게 */
+			background: #50627f;
+			color: #fff;
+			text-align: center;
+			padding: 8px 14px;
+			font-size: 13px;
+			border-radius: 6px;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+			animation: fadeInUp 0.4s ease-out;
+			
+			white-space: nowrap;       /* 줄바꿈 방지 */
+			max-width: 220px;           /* 필요 시 너비 제한 */
+			overflow: hidden;           /* 넘치는 텍스트 숨김 */
+			text-overflow: ellipsis;    /* 넘칠 때 ... 처리 */
+			
+		}
+		
+		/* 꼬리 */
+		.info-title::after {
+		  content: '';
+		  position: absolute;
+		  bottom: -8px;
+		  left: 50%;
+		  transform: translateX(-50%);
+		  border-width: 8px 8px 0 8px;
+		  border-style: solid;
+		  border-color: #50627f transparent transparent transparent;
+		}
+
+		/* 부드러운 등장 애니메이션 */
+		@keyframes fadeInUp {
+		  from {
+		    opacity: 0;
+		    transform: translateY(8px);
+		  }
+		  to {
+		    opacity: 1;
+		    transform: translateY(0);
+		  }
+		}	
+		
+	</style>
 </head>
 <body>
 
@@ -70,31 +116,71 @@
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=978b749ade2fb05402a450e0de2bc2a6&autoload=true&libraries=services,clusterer"></script>
 
 <script>
-  window.onload = () => {
-    const container = document.getElementById('map'); // 지도를 표시할 div
-    const options = {
-      center: new kakao.maps.LatLng(37.5665, 126.9780), //지도의 중심 좌표
-      level: 7 //지도의 확대 레벨
-    };
-    const map = new kakao.maps.Map(container, options);
+	window.onload = () => {
+	   const container = document.getElementById('map'); // 지도를 표시할 div
+	   const options = {
+	     center: new kakao.maps.LatLng(37.5665, 126.9780), //지도의 중심 좌표
+	     level: 7 //지도의 확대 레벨
+	   };
+	   const map = new kakao.maps.Map(container, options);
 
 	//마커 클러스터러 생성
-    const clusterer = new kakao.maps.MarkerClusterer({
-      map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
-      averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
-      minLevel: 6 // 클러스터 할 최소 지도 레벨 
-    });
+	   const clusterer = new kakao.maps.MarkerClusterer({
+	     map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+	     averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+	     minLevel: 6 // 클러스터 할 최소 지도 레벨 
+	   });
+	   
+	   fetch('/api/statistics/map')
+	     .then(res => res.json())
+	     .then(data => {
+	       const markers = [];
 
-    fetch('/api/statistics/map')
-      .then(res => res.json())
-      .then(data => {
-        const markers = data.map(p => new kakao.maps.Marker({
-          position: new kakao.maps.LatLng(p.latitude, p.longitude)
-        }));
-        clusterer.addMarkers(markers);
-      })
-      .catch(err => console.error("클러스터링 로딩 실패:", err));
-  };
+		   let currentInfoWindow = null; // 현재 열려 있는 인포윈도우 추적
+		   
+	       data.forEach(p => {
+	         const marker = new kakao.maps.Marker({
+	           position: new kakao.maps.LatLng(p.latitude, p.longitude)
+	         });
+
+	         const address = p.address || '주소 없음';
+
+	         const infowindow = new kakao.maps.InfoWindow({
+	           content: `<div class="info-title">${address}</div>`, // 인포 윈도우 내에 들어갈 컨텐츠
+	           removable: false 
+	         });
+			 
+			 // 클릭시 말풍선 열림 (닫지는 X)
+			 kakao.maps.event.addListener(marker, 'click', function () {
+			   infowindow.open(map, marker);
+			   currentInfoWindow = infowindow;
+			   
+			   //꼬리/배경 제거
+			   setTimeout(() => {
+		         const infoTitles = document.querySelectorAll('.info-title');
+		         infoTitles.forEach(e => {
+		           const parent = e.parentElement;
+		           if (parent?.previousSibling) {
+		             parent.previousSibling.style.display = 'none'; // 꼬리 제거
+		           }
+		           if (parent?.parentElement) {
+		             parent.parentElement.style.border = 'none';
+		             parent.parentElement.style.background = 'unset';
+		             parent.parentElement.style.boxShadow = 'none';
+		           }
+		         });
+		       }, 10); // 짧게 지연해서 DOM 붙은 후 실행
+			 });
+			 
+	         markers.push(marker);
+	       });
+
+		   // 마커 클러스터에 등록
+	       clusterer.addMarkers(markers);
+		   
+	     })
+	     .catch(err => console.error("클러스터링 로딩 실패:", err));
+		};
 </script>
 
 

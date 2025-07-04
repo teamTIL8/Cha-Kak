@@ -22,6 +22,7 @@ public class AdminStatisticsRestController {
     // 히트맵/마커용 좌표 리스트
     @GetMapping("/map")
     public List<ReportCoordinateDto> getAllCoordinates() {
+    	
         return statisticsService.getAllReportCoordinates();
     }
 	
