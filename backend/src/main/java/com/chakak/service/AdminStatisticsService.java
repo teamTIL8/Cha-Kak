@@ -3,6 +3,8 @@ package com.chakak.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.chakak.common.enums.Violation;
+import com.chakak.domain.Report;
 import com.chakak.dto.response.FrequentAddressDto;
 import com.chakak.dto.response.ReportCoordinateDto;
 import com.chakak.dto.response.TopVehicleReportDto;
@@ -46,4 +48,7 @@ public class AdminStatisticsService {
         return reportRepository.getAllReportCoordinates();
     }
     
+    public List<Report> getReportsByViolationType(Violation violationType) {
+        return reportRepository.findByViolationType(violationType);
+    }
 }

@@ -1,5 +1,6 @@
 package com.chakak.service;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,18 +32,15 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public Report save(Report report) {
-        // 간접세터 setUserId() 사용
         String userId = report.getUserId();
         User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자"));
 
-        report.setUser(user); // 영속 상태로 다시 교체
-
-        // address를 지역(location_type)으로 파싱
+        report.setUser(user);
         String address = report.getAddress();
         String locationType = AddressUtils.extractRegion(address);
         report.setLocationType(locationType);
-        
+
         return repository.save(report);
     }
 
@@ -56,7 +54,8 @@ public class ReportServiceImpl implements ReportService {
         return repository.findById(reportId).orElse(null);
     }
 
-    // ✅ 전체 조회 및 필터링 조회 구현
+    // ✅ 전체 조회 및 필터링 조회
+    @Override
     public Page<ReportDto> getAllReports(String carNumber, String location,
                                          String reportDateStr, String violationTypeStr,
                                          String startDateStr, String endDateStr,
@@ -87,24 +86,17 @@ public class ReportServiceImpl implements ReportService {
 
         Specification<Report> spec = Specification.where(null);
 
-       
-        // 차량 번호 검색 조건 추가
-        if (carNumber != null && !carNumber.isEmpty()) { // 변경: carNumber가 있을 때만 조건 추가
+        if (carNumber != null && !carNumber.isEmpty()) {
             spec = spec.and(ReportSpecification.carNumberContains(carNumber));
         }
 
-        // 위치 검색 조건 추가
-        if (location != null && !location.isEmpty()) { // 변경: location이 있을 때만 조건 추가
+        if (location != null && !location.isEmpty()) {
             spec = spec.and(ReportSpecification.locationContains(location));
         }
 
-        // 위반 유형 검색 조건 추가
-        // violationType은 이미 파싱되었으므로 null 여부만 체크합니다.
-        if (violationType != null) { // 변경: violationType이 있을 때만 조건 추가
+        if (violationType != null) {
             spec = spec.and(ReportSpecification.violationTypeEquals(violationType));
         }
-        // --- 수정 끝 ---
-
 
         if (reportDate != null) {
             spec = spec.and(ReportSpecification.reportDateEquals(reportDate));
@@ -112,20 +104,16 @@ public class ReportServiceImpl implements ReportService {
             spec = spec.and(ReportSpecification.reportDateBetween(startDate, endDate));
         }
 
-        // --- 수정 시작 ---
-        // 키워드 검색 조건 추가
-        // keyword가 있을 때만 조건 추가합니다.
-        if (keyword != null && !keyword.isEmpty()) { // 변경: keyword가 있을 때만 조건 추가
+        if (keyword != null && !keyword.isEmpty()) {
             spec = spec.and(ReportSpecification.keywordContains(keyword));
         }
-        // --- 수정 끝 ---
 
         Page<Report> reportPage = repository.findAll(spec, pageable);
 
         return reportPage.map(ReportDto::fromEntity);
     }
 
-    // ✅ 내가 쓴 글 조회
+    @Override
     public List<ReportDto> getMyReports(String userId) {
         return repository.findByUser_UserId(userId)
                 .stream()
@@ -133,6 +121,7 @@ public class ReportServiceImpl implements ReportService {
                 .toList();
     }
 
+    @Override
     @Transactional
     public ReportDto getReport(Long reportId) {
         Report report = repository.findById(reportId)
@@ -154,11 +143,26 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    // ✅ 상세 보기 조회
+    @Override
     public ReportDto getReportDetail(Long id) {
         Report report = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 신고 없음"));
-        report.setViewCount(report.getViewCount() + 1); // 조회수 증가 로직은 여기서도 필요
+        report.setViewCount(report.getViewCount() + 1);
         return ReportDto.fromEntity(report);
+    }
+
+    @Override
+    public void deleteReport(Long reportId) {
+        Report report = repository.findById(reportId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 제보입니다."));
+
+        report.getReportImages().forEach(image -> {
+            File file = new File(image.getImgPath());
+            if (file.exists()) {
+                file.delete();
+            }
+        });
+
+        repository.delete(report);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.chakak.common.enums.Violation;
 import com.chakak.domain.Report;
 import com.chakak.dto.response.FrequentAddressDto;
 import com.chakak.dto.response.ReportCoordinateDto;
@@ -58,9 +59,20 @@ public interface ReportRepository extends JpaRepository<Report, Long>, JpaSpecif
     
     // 지역별 제보 히트맵 표시용 좌표 데이터
     @Query(value = """
+<<<<<<< HEAD
             SELECT latitude, longitude
             FROM report
             WHERE latitude IS NOT NULL AND longitude IS NOT NULL
         """, nativeQuery = true)
     List<ReportCoordinateDto> getAllReportCoordinates();
 }
+=======
+    	    SELECT latitude, longitude, address
+    	    FROM report
+    	    WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+    	""", nativeQuery = true)
+    List<ReportCoordinateDto> getAllReportCoordinates();
+
+	List<Report> findByViolationType(Violation violationType);
+}
+>>>>>>> main
