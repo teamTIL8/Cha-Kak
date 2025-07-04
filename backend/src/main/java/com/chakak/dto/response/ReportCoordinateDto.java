@@ -4,4 +4,5 @@ package com.chakak.dto.response;
 public interface ReportCoordinateDto {
     Double getLatitude();
     Double getLongitude();
+    String getAddress();
 }

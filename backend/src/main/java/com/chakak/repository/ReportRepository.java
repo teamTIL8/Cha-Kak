@@ -56,7 +56,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     
     // 지역별 제보 히트맵 표시용 좌표 데이터
     @Query(value = """
-    	    SELECT latitude, longitude
+    	    SELECT latitude, longitude, address
     	    FROM report
     	    WHERE latitude IS NOT NULL AND longitude IS NOT NULL
     	""", nativeQuery = true)

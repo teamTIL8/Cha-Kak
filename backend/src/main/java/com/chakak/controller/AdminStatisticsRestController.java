@@ -2,6 +2,7 @@ package com.chakak.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +19,8 @@ import lombok.RequiredArgsConstructor;
 // json응답하는 restController - Kakao Map JS 스크립트에 연동
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/statistics")
+@RequestMapping("/admin/statistics")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminStatisticsRestController {
 	
     private final AdminStatisticsService statisticsService;
@@ -26,6 +28,7 @@ public class AdminStatisticsRestController {
     // 히트맵/마커용 좌표 리스트
     @GetMapping("/map")
     public List<ReportCoordinateDto> getAllCoordinates() {
+    	
         return statisticsService.getAllReportCoordinates();
     }
     

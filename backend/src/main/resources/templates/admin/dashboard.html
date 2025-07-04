@@ -1,161 +1,242 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>관리자 대시보드</title>
+    <meta charset="UTF-8" />
+    <style>
+      .info-title {
+        position: relative;
+        display: inline-block;
+        z-index: 9999; /* 항상 위에 보이게 */
+        background: #50627f;
+        color: #fff;
+        text-align: center;
+        padding: 8px 14px;
+        font-size: 13px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.4s ease-out;
 
-<head>
-	<title>관리자 대시보드</title>
-	<meta charset="UTF-8">
-</head>
+        white-space: nowrap; /* 줄바꿈 방지 */
+        max-width: 220px; /* 필요 시 너비 제한 */
+        overflow: hidden; /* 넘치는 텍스트 숨김 */
+        text-overflow: ellipsis; /* 넘칠 때 ... 처리 */
+      }
 
-<body>
+      /* 꼬리 */
+      .info-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 8px 8px 0 8px;
+        border-style: solid;
+        border-color: #50627f transparent transparent transparent;
+      }
 
-	<h1>📊 관리자 통계 대시보드</h1>
+      /* 부드러운 등장 애니메이션 */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
 
-	<!-- 중복 제보 차량 Top 10 -->
-	<section>
-		<h2>🚗 중복 제보 차량 Top 10</h2>
-		<table border="1">
-			<tr>
-				<th>순위</th>
-				<th>차량 번호</th>
-				<th>제보 횟수</th>
-			</tr>
-			<tr th:each="v, stat : ${topVehicles}">
-				<td th:text="${stat.index + 1}">1</td>
-				<td th:text="${v.vehicleNumber}">12가1234</td>
-				<td th:text="${v.count}">3</td>
-			</tr>
-		</table>
-	</section>
+  <body>
+    <h1>📊 관리자 통계 대시보드</h1>
 
-	<!-- 제보 유형 분포 -->
-	<section>
-		<h2>📊 제보 유형별 분포</h2>
-		<table border="1">
-			<tr>
-				<th>유형</th>
-				<th>제보 수</th>
-			</tr>
-			<tr th:each="t : ${typeStats}">
-				<td th:text="${t.violationType}">자전거도로</td>
-				<td th:text="${t.count}">5</td>
-			</tr>
-		</table>
-	</section>
+    <!-- 중복 제보 차량 Top 10 -->
+    <section>
+      <h2>🚗 중복 제보 차량 Top 10</h2>
+      <table border="1">
+        <tr>
+          <th>순위</th>
+          <th>차량 번호</th>
+          <th>제보 횟수</th>
+        </tr>
+        <tr th:each="v, stat : ${topVehicles}">
+          <td th:text="${stat.index + 1}">1</td>
+          <td th:text="${v.vehicleNumber}">12가1234</td>
+          <td th:text="${v.count}">3</td>
+        </tr>
+      </table>
+    </section>
 
-	<!-- 반복 제보 위치 Top 10 -->
-	<section>
-		<h2>🏘️ 반복 제보 지역 Top 10</h2>
-		<table border="1">
-			<tr>
-				<th>순위</th>
-				<th>주소</th>
-				<th>제보 수</th>
-			</tr>
-			<tr th:each="a, stat : ${locationStats}">
-				<td th:text="${stat.index + 1}">1</td>
-				<td th:text="${a.location}">서울시 강남구</td>
-				<td th:text="${a.count}">7</td>
-			</tr>
-		</table>
-	</section>
+    <!-- 제보 유형 분포 -->
+    <section>
+      <h2>📊 제보 유형별 분포</h2>
+      <table border="1">
+        <tr>
+          <th>유형</th>
+          <th>제보 수</th>
+        </tr>
+        <tr th:each="t : ${typeStats}">
+          <td th:text="${t.violationType}">자전거도로</td>
+          <td th:text="${t.count}">5</td>
+        </tr>
+      </table>
+    </section>
 
+    <!-- 반복 제보 위치 Top 10 -->
+    <section>
+      <h2>🏘️ 반복 제보 지역 Top 10</h2>
+      <table border="1">
+        <tr>
+          <th>순위</th>
+          <th>주소</th>
+          <th>제보 수</th>
+        </tr>
+        <tr th:each="a, stat : ${locationStats}">
+          <td th:text="${stat.index + 1}">1</td>
+          <td th:text="${a.location}">서울시 강남구</td>
+          <td th:text="${a.count}">7</td>
+        </tr>
+      </table>
+    </section>
 
-	<!-- 지역별 제보 히트맵 -->
-	<section>
-		<h2>🗺️ 지역별 제보 클러터링 지도</h2>
-		<!-- html -->
-		<div id="map" style="width:800px; height:500px;"></div>
-	</section>
+    <!-- 지역별 제보 히트맵 -->
+    <section>
+      <h2>🗺️ 지역별 제보 클러터링 지도</h2>
+      <!-- html -->
+      <div id="map" style="width: 800px; height: 500px"></div>
+    </section>
 
-	<section>
-		<h2>🚦 제보 유형별 필터</h2>
-		<label for="violationType">신고 유형 선택:</label>
-		<select id="violationType" name="violationType">
-			<option value="" selected>선택</option>
-			<option th:each="type : ${violationTypeList}" th:value="${type.name}" th:text="${type.label}">
-			</option>
-		</select>
-		<table border="1" id="reportTable">
-			<thead>
-				<tr>
-					<th>신고 번호</th>
-					<th>제목</th>
-					<th>위반 유형</th>
-					<th>위반 지역</th>
-					<th>위반 일자</th>
-				</tr>
-			</thead>
-			<tbody>
-				<!-- JS로 동적 렌더링 -->
-			</tbody>
-		</table>
-	</section>
+    <section>
+      <h2>🚦 제보 유형별 필터</h2>
+      <label for="violationType">신고 유형 선택:</label>
+      <select id="violationType" name="violationType">
+        <option value="" selected>선택</option>
+        <option
+          th:each="type : ${violationTypeList}"
+          th:value="${type.name}"
+          th:text="${type.label}"
+        ></option>
+      </select>
+      <table border="1" id="reportTable">
+        <thead>
+          <tr>
+            <th>신고 번호</th>
+            <th>제목</th>
+            <th>위반 유형</th>
+            <th>위반 지역</th>
+            <th>위반 일자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS로 동적 렌더링 -->
+        </tbody>
+      </table>
+    </section>
 
+    <!-- 카카오 지도 SDK (✅ 핵심: visualization 포함, autoload=true) -->
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=978b749ade2fb05402a450e0de2bc2a6&autoload=true&libraries=services,clusterer"></script>
 
-	<!-- 카카오 지도 SDK (✅ 핵심: visualization 포함, autoload=true) -->
-	<script
-		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=978b749ade2fb05402a450e0de2bc2a6&autoload=true&libraries=services,clusterer"></script>
+    <script>
+      window.onload = () => {
+        const container = document.getElementById("map"); // 지도를 표시할 div
+        const options = {
+          center: new kakao.maps.LatLng(37.5665, 126.978), //지도의 중심 좌표
+          level: 7, //지도의 확대 레벨
+        };
+        const map = new kakao.maps.Map(container, options);
 
-	<script>
-		window.onload = () => {
-			const container = document.getElementById('map'); // 지도를 표시할 div
-			const options = {
-				center: new kakao.maps.LatLng(37.5665, 126.9780), //지도의 중심 좌표
-				level: 7 //지도의 확대 레벨
-			};
-			const map = new kakao.maps.Map(container, options);
+        //마커 클러스터러 생성
+        const clusterer = new kakao.maps.MarkerClusterer({
+          map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
+          averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+          minLevel: 6, // 클러스터 할 최소 지도 레벨
+        });
 
-			//마커 클러스터러 생성
-			const clusterer = new kakao.maps.MarkerClusterer({
-				map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
-				averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
-				minLevel: 6 // 클러스터 할 최소 지도 레벨 
-			});
+        fetch("/api/statistics/map")
+          .then((res) => res.json())
+          .then((data) => {
+            const markers = [];
 
-			fetch('/api/statistics/map')
-				.then(res => res.json())
-				.then(data => {
-					const markers = data.map(p => new kakao.maps.Marker({
-						position: new kakao.maps.LatLng(p.latitude, p.longitude)
-					}));
-					clusterer.addMarkers(markers);
-				})
-				.catch(err => console.error("클러스터링 로딩 실패:", err));
-		};
+            let currentInfoWindow = null; // 현재 열려 있는 인포윈도우 추적
 
-		document.addEventListener("DOMContentLoaded", function () {
-			const select = document.getElementById("violationType");
+            data.forEach((p) => {
+              const marker = new kakao.maps.Marker({
+                position: new kakao.maps.LatLng(p.latitude, p.longitude),
+              });
 
-			select.addEventListener("change", function () {
-				const type = select.value;
-				if (!type) return;
+              const address = p.address || "주소 없음";
 
-				fetch(`/api/statistics/by-type?violationType=${type}`)
-					.then(res => {
-						if (!res.ok) throw new Error("서버 응답 오류");
-						return res.json();
-					})
-					.then(data => {
-						const tableBody = document.querySelector("#reportTable tbody");
-						tableBody.innerHTML = "";
+              const infowindow = new kakao.maps.InfoWindow({
+                content: `<div class="info-title">${address}</div>`, // 인포 윈도우 내에 들어갈 컨텐츠
+                removable: false,
+              });
 
-						if (data.length === 0) {
-							const row = document.createElement("tr");
-							const cell = document.createElement("td");
-							cell.colSpan = 7;
-							cell.innerText = "해당 유형의 제보가 없습니다.";
-							row.appendChild(cell);
-							tableBody.appendChild(row);
-							return;
-						}
+              // 클릭시 말풍선 열림 (닫지는 X)
+              kakao.maps.event.addListener(marker, "click", function () {
+                infowindow.open(map, marker);
+                currentInfoWindow = infowindow;
 
-						data.forEach((report, index) => {
-							const row = document.createElement("tr");
+                //꼬리/배경 제거
+                setTimeout(() => {
+                  const infoTitles = document.querySelectorAll(".info-title");
+                  infoTitles.forEach((e) => {
+                    const parent = e.parentElement;
+                    if (parent?.previousSibling) {
+                      parent.previousSibling.style.display = "none"; // 꼬리 제거
+                    }
+                    if (parent?.parentElement) {
+                      parent.parentElement.style.border = "none";
+                      parent.parentElement.style.background = "unset";
+                      parent.parentElement.style.boxShadow = "none";
+                    }
+                  });
+                }, 10); // 짧게 지연해서 DOM 붙은 후 실행
+              });
 
-							const region = report.address ?? "-";
-							const date = new Date(report.reportTime).toLocaleString();
+              markers.push(marker);
+            });
 
-							row.innerHTML = `
+            // 마커 클러스터에 등록
+            clusterer.addMarkers(markers);
+          })
+          .catch((err) => console.error("클러스터링 로딩 실패:", err));
+      };
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const select = document.getElementById("violationType");
+
+        select.addEventListener("change", function () {
+          const type = select.value;
+          if (!type) return;
+
+          fetch(`/api/statistics/by-type?violationType=${type}`)
+            .then((res) => {
+              if (!res.ok) throw new Error("서버 응답 오류");
+              return res.json();
+            })
+            .then((data) => {
+              const tableBody = document.querySelector("#reportTable tbody");
+              tableBody.innerHTML = "";
+
+              if (data.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 7;
+                cell.innerText = "해당 유형의 제보가 없습니다.";
+                row.appendChild(cell);
+                tableBody.appendChild(row);
+                return;
+              }
+
+              data.forEach((report, index) => {
+                const row = document.createElement("tr");
+
+                const region = report.address ?? "-";
+                const date = new Date(report.reportTime).toLocaleString();
+
+                row.innerHTML = `
 								<td>${report.reportId}</td>
 								<td>${report.title}</td>
 								<td>${report.violationType}</td>
@@ -163,22 +244,17 @@
 								<td>${date}</td>
 							`;
 
-							tableBody.appendChild(row);
-						});
-					})
-					.catch(err => {
-						console.error("요청 실패:", err);
-						alert("데이터를 불러오는 데 실패했습니다.");
-					});
-			});
-		});
+                tableBody.appendChild(row);
+              });
+            })
+            .catch((err) => {
+              console.error("요청 실패:", err);
+              alert("데이터를 불러오는 데 실패했습니다.");
+            });
+        });
+      });
+    </script>
 
-	</script>
-
-
-
-	<p><a th:href="@{/admin/users}">▶ 회원 관리</a></p>
-
-</body>
-
+    <p><a th:href="@{/admin/users}">▶ 회원 관리</a></p>
+  </body>
 </html>
