@@ -45,27 +45,16 @@ public interface ReportRepository extends JpaRepository<Report, Long>, JpaSpecif
         """, nativeQuery = true)
     List<ViolationTypeStatDto> getViolationTypeStats();
     
-    // 반복 제보 위치 통계 (지역별)
+    // 반복 제보 위치 통계 (지역별) ✅ 팀원 코드 유지
     @Query(value = """
-<<<<<<< HEAD
-            SELECT address, COUNT(*) AS count
-            FROM report
-            WHERE address IS NOT NULL
-            GROUP BY address
-            ORDER BY count DESC
-            LIMIT 10
-        """, nativeQuery = true)
+        SELECT location_type AS location, COUNT(*) AS count
+        FROM report
+        WHERE location_type IS NOT NULL
+        GROUP BY location_type
+        ORDER BY count DESC
+        LIMIT 10
+    """, nativeQuery = true)
     List<FrequentAddressDto> getFrequentAddresses();
-=======
-    	    SELECT location_type AS location, COUNT(*) AS count
-    	    FROM report
-    	    WHERE location_type IS NOT NULL
-    	    GROUP BY location_type
-    	    ORDER BY count DESC
-    	    LIMIT 10
-    	""", nativeQuery = true)
-    	List<FrequentAddressDto> getFrequentAddresses();
->>>>>>> main
     
     // 지역별 제보 히트맵 표시용 좌표 데이터
     @Query(value = """
