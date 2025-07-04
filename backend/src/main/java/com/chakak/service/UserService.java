@@ -1,16 +1,22 @@
 package com.chakak.service;
 
 import com.chakak.domain.User;
+import com.chakak.dto.request.UserLoginDto;
 import com.chakak.dto.request.UserRegisterDto;
 import com.chakak.dto.request.UserUpdateDto;
 import com.chakak.repository.UserRepository;
+import com.chakak.util.JwtUtil;
+import com.chakak.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -22,11 +28,23 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUserIdAndIsDeletedFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
+
+    public String login(UserLoginDto loginDto) {
+        User user = findByUserId(loginDto.getUserId());
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("사용자 ID 또는 비밀번호가 올바르지 않습니다.");
+        }
+
+        return jwtUtil.generateToken(user);
     }
 
     public User register(UserRegisterDto registerDto, PasswordEncoder passwordEncoder) {
@@ -67,8 +85,23 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
 
-    public User updateUser(String userId, UserUpdateDto updateDto, PasswordEncoder passwordEncoder) {
+    public User updateUser(String userId, UserUpdateDto updateDto, boolean changePassword) {
         User user = findByUserId(userId);
+
+        BindingResult bindingResult = new BeanPropertyBindingResult(updateDto, "updateDto");
+
+        ValidationUtils.validateBasicInfo(updateDto, bindingResult);
+        ValidationUtils.validateCurrentPassword(updateDto, user, this, passwordEncoder, bindingResult);
+
+        if (changePassword) {
+            ValidationUtils.validateNewPassword(updateDto, bindingResult);
+        } else {
+            updateDto.setPassword(null);
+        }
+
+        if (bindingResult.hasErrors()) {
+            throw new RuntimeException(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
 
         if (updateDto.getName() != null && !updateDto.getName().trim().isEmpty()) {
             user.setName(updateDto.getName());
