@@ -11,5 +11,7 @@ public interface ReportService {
 	public List<Report> findAll();
 
 	public Report findById(Long reportId);
+
+	public void deleteReport(Long reportId);
 	
 }
