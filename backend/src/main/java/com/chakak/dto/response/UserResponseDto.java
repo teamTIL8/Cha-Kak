@@ -1,23 +1,15 @@
 package com.chakak.dto.response;
 
-import com.chakak.domain.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponseDto {
 	private String userId;
 	private String email;
 	private String name;
 	private String role;
-
-	public static UserResponseDto from(User user) {
-		UserResponseDto dto = new UserResponseDto();
-		dto.setUserId(user.getUserId());
-		dto.setEmail(user.getEmail());
-		dto.setName(user.getName());
-		dto.setRole(user.getRole().name());
-		return dto;
-	}
 }

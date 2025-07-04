@@ -1,36 +1,67 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>로그인</title>
+	<title>로그인 - Chakak</title>
 	<link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-	<div class="container">
-		<h1>로그인</h1>
-		<form action="/perform_login" method="post">
-			<div class="form-group">
-				<label for="userId">아이디:</label>
-				<input type="text" id="userId" name="userId" required>
+	<!-- 네비게이션 바 -->
+	<nav class="navbar">
+		<div class="container">
+			<a class="navbar-brand" href="/">🏠 Chakak</a>
+			<div class="navbar-nav">
+				<a class="nav-link" href="/">홈으로</a>
 			</div>
-			<div class="form-group">
-				<label for="password">비밀번호:</label>
-				<input type="password" id="password" name="password" required>
+		</div>
+	</nav>
+
+	<!-- 메인 컨텐츠 -->
+	<div class="container container-narrow">
+		<div class="card">
+			<div class="card-header">
+				<h1>로그인</h1>
 			</div>
-			<button type="submit" class="button">로그인</button>
-		</form>
+			<div class="card-body">
+				<!-- 성공 메시지 -->
+				<div th:if="${message}" class="success-message">
+					<span th:text="${message}"></span>
+				</div>
 
-		<div th:if="${param.error}" class="error-message">
-			<p>잘못된 아이디 또는 비밀번호입니다.</p>
-		</div>
-		<div th:if="${param.logout}" class="success-message">
-			<p>로그아웃 되었습니다.</p>
-		</div>
+				<form th:action="@{/login}" th:object="${loginDto}" method="post" class="form-container">
+					<div class="form-group">
+						<label for="userId">사용자 ID</label>
+						<input type="text"
+							th:class="${#fields.hasErrors('userId')} ? 'form-control error' : 'form-control'"
+							id="userId" th:field="*{userId}" placeholder="사용자 ID를 입력하세요">
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('userId')}">
+							<span th:errors="*{userId}"></span>
+						</div>
+					</div>
 
-		<p>계정이 없으신가요? <a href="/signup">회원가입</a></p>
+					<div class="form-group">
+						<label for="password">비밀번호</label>
+						<input type="password"
+							th:class="${#fields.hasErrors('password')} ? 'form-control error' : 'form-control'"
+							id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('password')}">
+							<span th:errors="*{password}"></span>
+						</div>
+					</div>
+
+					<div class="button-container">
+						<button type="submit" class="button primary">로그인</button>
+					</div>
+				</form>
+
+				<div style="text-align: center; margin-top: 20px;">
+					<p>계정이 없으신가요? <a th:href="@{/register}" style="color: #3498db; text-decoration: none;">회원가입</a></p>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 
