@@ -42,7 +42,7 @@ public class Report {
     private Long reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)  // 대문자 맞춤
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     public void setUserId(String userId) {
@@ -64,26 +64,14 @@ public class Report {
 
     @Enumerated(EnumType.STRING)
     private Violation violationType;
-<<<<<<< HEAD
 
-    private String address;
-
-    private double latitude;
-    private double longitude;
-
+    private String address; //지도상 주소
+    private double latitude; // 위도
+    private double longitude; // 경도
+    private String locationType; // 지역(시/구/동 단위)
     private String description;
 
-    @Column(name = "VIEW_CNT")
-=======
-	
-	private String address; //지도상 주소
-	private double latitude; // 위도
-	private double longitude; // 경도
-	private String locationType; // 지역(시/구/동 단위)
-	private String description;
-	
     @Column(name = "view_cnt")
->>>>>>> main
     private Long viewCount = 0L;
 
     @Column(insertable = false, updatable = false)
