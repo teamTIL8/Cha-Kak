@@ -31,8 +31,6 @@ public class AdminStatisticsRestController {
     @GetMapping("/map")
     public List<ReportCoordinateDto> getAllCoordinates() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("🔐 AUTH = " + auth);
-        System.out.println("🔐 AUTHORITIES = " + auth.getAuthorities());
         return statisticsService.getAllReportCoordinates();
     }
     
