@@ -37,7 +37,6 @@ public class AdminUserController {
      */
     @GetMapping("/{userId}/reports")
     public String userReports(@PathVariable String userId, Model model) {
-    	System.out.println(">>> userId = " + userId); // 로그 확인
         List<Report> reports = adminUserService.getReportsByUser(userId);
         model.addAttribute("reports", reports);
         model.addAttribute("userId", userId);

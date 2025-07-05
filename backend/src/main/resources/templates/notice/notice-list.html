@@ -126,7 +126,7 @@
 			<hr>
 			<div class="table-header">
 				<h2>공지사항 목록</h2>
-				<a href="/notice/new" class="report-button">새 글 작성</a>
+				<a href="/admin/notice/new" class="report-button">새 글 작성</a>
 			</div>
 
 			<table>
@@ -143,7 +143,7 @@
 					<tr th:each="notice : ${noticeList}">
 						<td th:text="${notice.noticeId}">1</td>
 						<td>
-							<a th:href="@{|/notice/${notice.noticeId}|}" th:text="${notice.title}">제목</a>
+							<a th:href="@{|/admin/notice/${notice.noticeId}|}" th:text="${notice.title}">제목</a>
 						</td>
 						<td th:text="${notice.createdUser.userId}">작성자</td>
 						<td th:text="${#temporals.format(notice.created_at, 'yyyy-MM-dd HH:mm')}">2025-07-03</td>
