@@ -44,7 +44,7 @@ public final class ValidationUtils {
     public static void validateCurrentPassword(UserUpdateDto updateDto, User user, UserService userService, PasswordEncoder passwordEncoder, BindingResult bindingResult) {
         if (updateDto.getCurrentPassword() == null || updateDto.getCurrentPassword().trim().isEmpty()) {
             bindingResult.rejectValue(AuthConstants.ATTR_USER, AuthConstants.ERROR_CODE_CURRENT_PASSWORD, AuthConstants.MSG_CURRENT_PASSWORD_REQUIRED);
-        } else if (!userService.checkPassword(user.getUserId(), updateDto.getCurrentPassword(), passwordEncoder)) {
+        } else if (!userService.checkPassword(user.getUserId(), updateDto.getCurrentPassword())) {
             bindingResult.rejectValue(AuthConstants.ATTR_USER, AuthConstants.ERROR_CODE_CURRENT_PASSWORD, AuthConstants.MSG_CURRENT_PASSWORD_INVALID);
         }
     }

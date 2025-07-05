@@ -2,11 +2,10 @@ package com.chakak.controller;
 
 import com.chakak.common.constants.AuthConstants;
 import com.chakak.dto.request.UserRegisterDto;
-import com.chakak.service.UserService;
+import com.chakak.service.UserRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,8 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Slf4j
 public class UserController {
 
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRegistrationService userRegistrationService;
 
     @GetMapping("/register")
     public String registerPage(Model model) {
@@ -40,7 +38,7 @@ public class UserController {
         }
 
         try {
-            userService.register(registerDto, passwordEncoder);
+            userRegistrationService.register(registerDto);
             redirectAttributes.addFlashAttribute(AuthConstants.ATTR_MESSAGE, AuthConstants.MSG_REGISTRATION_SUCCESS);
             return AuthConstants.REDIRECT_LOGIN;
 
@@ -54,12 +52,12 @@ public class UserController {
     @PostMapping("/check-userid")
     @ResponseBody
     public boolean checkUserId(@RequestParam String userId) {
-        return userService.isUserIdAvailable(userId);
+        return userRegistrationService.isUserIdAvailable(userId);
     }
 
     @PostMapping("/check-email")
     @ResponseBody
     public boolean checkEmail(@RequestParam String email) {
-        return userService.isEmailAvailable(email);
+        return userRegistrationService.isEmailAvailable(email);
     }
 }

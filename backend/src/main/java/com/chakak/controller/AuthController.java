@@ -2,7 +2,7 @@ package com.chakak.controller;
 
 import com.chakak.common.constants.AuthConstants;
 import com.chakak.dto.request.UserLoginDto;
-import com.chakak.service.UserService;
+import com.chakak.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Slf4j
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/login")
     public String loginPage(Model model) {
@@ -39,7 +39,7 @@ public class AuthController {
         }
 
         try {
-            String token = userService.login(loginDto);
+            String token = authService.login(loginDto);
             log.info("Login successful for user: {}", loginDto.getUserId());
 
             Cookie cookie = new Cookie(AuthConstants.TOKEN_COOKIE_NAME, token);
