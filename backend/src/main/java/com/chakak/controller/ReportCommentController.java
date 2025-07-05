@@ -1,5 +1,6 @@
 package com.chakak.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chakak.domain.Comment;
+import com.chakak.domain.User;
 import com.chakak.dto.request.ReportCommentRequest;
 import com.chakak.dto.response.ReportCommentResponse;
 import com.chakak.service.ReportCommentService;
@@ -30,33 +32,33 @@ public class ReportCommentController {
 	 * 제보 댓글 저장
 	 * */
 	@PostMapping
-    public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto) {
-        Comment comment = new Comment();
-        comment.setContent(commentDto.getContent());
-        // User는 service에서 따로 처리 안 하니, Comment 객체에는 user 필드 세팅 없이 저장
+	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
+		Comment comment = new Comment();
+		User user = new User();
+		user.setUserId(principal.getName());
+		comment.setContent(commentDto.getContent());
+		
+		Comment savedComment = service.save(comment, commentDto.getReportId());
+		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
+		return ResponseEntity.ok(commentList);
+	}
 
-        Comment savedComment = service.save(comment, commentDto.getReportId());
-
-        List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
-        return ResponseEntity.ok(commentList);
-    }
-
-	
 	/**
 	 * 제보 댓글 수정
 	 * */
 	@PutMapping
-    public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto) {
-        Comment comment = new Comment();
-        comment.setCommentId(commentDto.getCommentId());
-        comment.setContent(commentDto.getContent());
-        // User 관련 처리도 생략
+	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
+		Comment comment = new Comment();
+		User user = new User();
+		user.setUserId(principal.getName());
+		comment.setCommentId(commentDto.getCommentId());
+		comment.setContent(commentDto.getContent());
 
-        Comment updatedComment = service.update(comment, commentDto.getReportId());
-
-        List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
-        return ResponseEntity.ok(commentList);
-    }
+		Comment updatedComment = service.update(comment, commentDto.getReportId());
+		
+		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
+		return ResponseEntity.ok(commentList);
+	}
 	
 	/**
 	 * 제보 댓글 삭제

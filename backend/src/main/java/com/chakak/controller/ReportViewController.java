@@ -1,5 +1,6 @@
 package com.chakak.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +115,7 @@ public class ReportViewController {
 	 * 불법 주정차 제보 상세 화면 이동
 	 * */
 	@GetMapping("/report/{reportId}")
-	public String detailReport(Model model, @PathVariable Long reportId) {
+	public String detailReport(Model model, @PathVariable Long reportId, Principal principal) {
 		Report report = service.findById(reportId);
 		
 		ReportResponse reportResponse = new ReportResponse(report.getReportId(), 
@@ -137,6 +138,7 @@ public class ReportViewController {
 		model.addAttribute("report", reportResponse);
 		model.addAttribute("reportImages", reportImages);
 		model.addAttribute("comments", comments);
+		model.addAttribute("currentUserId", principal.getName());
 		
 		return "report/report-detail";
 	}
