@@ -2,6 +2,8 @@ package com.chakak.dto;
 
 
 
+import java.time.LocalDateTime;
+
 import com.chakak.domain.Report;
 
 import lombok.AllArgsConstructor;
@@ -20,8 +22,9 @@ public class ReportDto {
 	private String title;
 	private String vehicleNumber;
 	private String address;
+    private String violationType;
 	private Long viewCnt;
-	
+	private LocalDateTime reportTime; 
 	
 	
 	
@@ -32,7 +35,9 @@ public class ReportDto {
 				report.getTitle(),
 				report.getVehicleNumber(),
 				report.getAddress(),
-				report.getViewCount()
+				report.getViolationType() != null ? report.getViolationType().name() : null,
+				report.getViewCount(),
+				report.getReportTime()  
 				);
 	}
 	

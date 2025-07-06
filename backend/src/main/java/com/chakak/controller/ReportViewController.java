@@ -34,7 +34,7 @@ public class ReportViewController {
 	/**
 	 * 불법 주정차 제보 목록 화면 이동
 	 * */
-	@GetMapping({"/report/list", "/report/all-list"})
+	@GetMapping({"/report/list"})
 	public String listReports(
 	        @RequestParam(defaultValue = "0") int page,
 	        @RequestParam(defaultValue = "10") int size,
@@ -46,27 +46,40 @@ public class ReportViewController {
 	        @RequestParam(required = false) String endDate,
 	        @RequestParam(required = false) String keyword,
 	        Model model) {
+		
+	
 
 	    Pageable pageable = PageRequest.of(page, size);
 
 	    Page<ReportDto> reportPage = service.getAllReports(
 	        carNumber, location, reportDate, violationType, startDate, endDate, keyword, pageable
 	    );
-
+	    
+	 
 	    model.addAttribute("reportPage", reportPage);
 	    model.addAttribute("reportList", reportPage.getContent());
 	    model.addAttribute("currentPage", page);
-	    model.addAttribute("carNumber", carNumber);
-	    model.addAttribute("location", location);
-	    model.addAttribute("reportDate", reportDate);
-	    model.addAttribute("violationType", violationType);
-	    model.addAttribute("startDate", startDate);
-	    model.addAttribute("endDate", endDate);
-	    model.addAttribute("keyword", keyword);
+	    // null 값 체크 해서 값 없을 경우 model에 아예 안 넣기
+	    if (carNumber != null) model.addAttribute("carNumber", carNumber);
+	    if (location != null) model.addAttribute("location", location);
+	    if (violationType != null) model.addAttribute("violationType", violationType);
+	    if (startDate != null) model.addAttribute("startDate", startDate);
+	    if (endDate != null) model.addAttribute("endDate", endDate);
+	    if (keyword != null) model.addAttribute("keyword", keyword);
+	    
+	    model.addAttribute("violationTypes", Violation.values());
 
 	    return "report/report-list";
 	}
-
+	
+	
+	/**
+	 * report-list.html 에서 초기화 버튼 동작이 검색 조건을 계속 model에 주입하고 있어 경로를 명확히 설정하기 위해 추가함
+	 */
+	@GetMapping("/report/list/reset")
+	public String resetSearch() {
+	    return "redirect:/report/list"; 
+	}
 
 
 	

@@ -1,6 +1,8 @@
 package com.chakak.config;
 
+import com.chakak.filter.JwtAuthenticationFilter;
 import com.chakak.service.CustomUserDetailsService;
+import com.chakak.service.UserService;
 import com.chakak.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,6 +43,7 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final ApplicationContext applicationContext;
+    private final UserService userService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,7 +54,10 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+    
+    
 
+    
     @Bean
     public OncePerRequestFilter jwtAuthenticationFilter() {
         return new OncePerRequestFilter() {
@@ -97,7 +103,25 @@ public class SecurityConfig {
                     }
                 } else {
                     log.debug("No valid token found for request: {}", requestURI);
+                /////🌟🌟🌟🌟 테스스트용///////////////////
+                    if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                        log.warn("JWT 없음 또는 무효 → test1234 인증 삽입");
+                        try {
+                        	UserDetailsService userDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
+                        	UserDetails testUser = userDetailsService.loadUserByUsername("test1234");
+                            UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(testUser, null, testUser.getAuthorities());
+                            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(authToken);
+                        } catch (Exception e) {
+                            log.error("❌ test1234 인증 실패", e);
+                        }
+                    }
+                    /////////////////////////////
+                    
+
                 }
+                
 
                 filterChain.doFilter(request, response);
             }
@@ -122,20 +146,21 @@ public class SecurityConfig {
             }
         };
     }
-
+ 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/check-userid", "/check-email", "/css/**",
-                                "/js/**", "/images/**", "/favicon.ico")
+                                "/js/**", "/images/**", "/favicon.ico","/report/my/reports-reaction") //myreports-reaction추가함 (이거 나중에 없앰) 
                         .permitAll()
+             
                         .requestMatchers("/mypage", "/edit", "/withdraw").authenticated()
-                        .requestMatchers("/api/reports/**", "/api/comments/**").permitAll()
+                        .requestMatchers("/report/**", "/comment/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)  //이게 기존 코드 
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout.logoutUrl("/logout")

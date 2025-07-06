@@ -29,24 +29,39 @@ public class ReactionController {
 	@GetMapping("/users/me/likes") 
 	public ResponseEntity<List<ReportDto>> getLikedReports(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        String userId = userDetails.getUsername();
+        //String userId = userDetails.getUsername();
+		
+		///🌟🌟 하드코딩 처리 ////////
+		String userId = "test1234";
+    	
+    	
+    	////////////////////////
+    	///
         return ResponseEntity.ok(reactionService.getReactionsByType(userId, "LIKE"));
     }
 	
 	@GetMapping("/users/me/dislikes")
 	public ResponseEntity<List<ReportDto>> getDislikedReports(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        String userId = userDetails.getUsername();
+        //String userId = userDetails.getUsername();
+		
+		///🌟🌟🌟🌟 하드코딩 처리 ////
+		String userId= "test1234";
+    	///
         return ResponseEntity.ok(reactionService.getReactionsByType(userId, "DISLIKE"));
     }
 	
-	/////////////////////////////////////////
+
 	// 좋아요 또는 싫어요 등록 / 취소 (toggle)
 	@PostMapping("/reactions/{reportId}")
 	 public ResponseEntity<String> toggleReaction(
 	            @PathVariable Long reportId,
 	            @RequestParam String reactionType,
 	            @AuthenticationPrincipal CustomUserDetails userDetails) {
+		
+		////🌟🌟🌟🌟 하드코딩 /////////
+		String userId = "test1234"; // ✅ 하드코딩된 userId
+        
 
 	        User user = new User();
 	        user.setUserId(userDetails.getUsername());

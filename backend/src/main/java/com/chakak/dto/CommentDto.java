@@ -23,6 +23,8 @@ public class CommentDto {
 	private String content;
 	private LocalDateTime createdAt;
 	private LocalDateTime updateAt;
+	// 프론트 표시용 필드임
+	private String reportTitle;
 	
 	public static CommentDto fromEntity(Comment comment) {
 		return CommentDto.builder()
@@ -32,6 +34,7 @@ public class CommentDto {
 				.content(comment.getContent())
 				.createdAt(comment.getCreatedAt())
 				.updateAt(comment.getUpdatedAt())
+				.reportTitle(comment.getReport().getTitle()) 
 				.build();
 	}
 

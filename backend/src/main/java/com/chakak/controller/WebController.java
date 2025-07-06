@@ -23,13 +23,15 @@ import com.chakak.service.ReportService;
 @RequestMapping("/report") 
 public class WebController {
 
-    @Autowired
-    private ReportService reportService;
 
     @Autowired
     private CommentService commentService; 
     // 루트 페이지 또는 신고 목록 페이지 (Thymeleaf 사용)
-    /*@GetMapping({"/all-list"})
+    
+    //// 
+    /// reportviewcontroller에서 전체 조회 부분 메소드가 있는데 기능이 겹쳐서 일단 주석처리 함
+    ///
+   /* @GetMapping({"/list/all"})
     public String getAllReports(
             @RequestParam(required = false) String carNumber,
             @RequestParam(required = false) String location,
@@ -63,8 +65,11 @@ public class WebController {
     }*/
 
 
+    ////
+    /// 이 부분도 reportviewController에서의 상세 조회 부분과 비슷하여 혼동을 줄 수 있으므로 일단 주석 처리함
+    ///
     // 신고 상세 페이지 (Thymeleaf 사용)
-    @GetMapping("/view/{reportId}")
+    /*@GetMapping("/view/{reportId}")
     public String getReportDetail(@PathVariable Long reportId, Model model) {
         // ReportDetailDto 대신 ReportDto를 사용하도록 변경
         ReportDto reportDetail = reportService.getReportDetail(reportId); // 상세 정보 가져오기
@@ -72,16 +77,21 @@ public class WebController {
 
         return "reports/report-detail"; 
     }
-  
+  */
 
     // 마이페이지 - 내가 작성한 신고글 목록 (Thymeleaf 사용)
+   /*
     @GetMapping("/my/reports")
     public String getMyReports(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        String userId = userDetails.getUsername();
+        String userId = userDetails.getUsername();  //이게 원래 코드임 
+    
         List<ReportDto> myReports = reportService.getMyReports(userId);
         model.addAttribute("myReports", myReports);
         return  "report/my/reports";
     }
+    */
+    
+   
 
   
 }

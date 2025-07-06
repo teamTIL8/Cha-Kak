@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,7 +37,7 @@ public class ReportController {
 	private final ReportImageService reportImageService;
 	
 	// ✅ 제보 신청 내역 저장 
-	@PostMapping
+	/*@PostMapping
 	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto, Principal principal){
 		String userId = principal.getName(); 
 		
@@ -52,8 +53,27 @@ public class ReportController {
 		
 		Report savedReport = reportService.save(report);
 		return ResponseEntity.ok(savedReport.getReportId());
-	}
+	}*/
 	
+	/// 임시 테스트용 다시 되돌릴 거임 
+	@PostMapping
+	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto) {
+	    String userId = "test1234";  //🌟🌟 하드코딩된 userId
+	    
+	    Report report = new Report();
+	    report.setTitle(reportDto.getTitle());
+	    report.setUserId(userId);
+	    report.setViolationType(reportDto.getViolationType());
+	    report.setVehicleNumber(reportDto.getVehicleNumber());
+	    report.setDescription(reportDto.getDescription());
+	    report.setAddress(reportDto.getAddress());
+	    report.setLatitude(reportDto.getLatitude());
+	    report.setLongitude(reportDto.getLongitude());
+	    
+	    Report savedReport = reportService.save(report);
+	    return ResponseEntity.ok(savedReport.getReportId());
+	}
+//////////////
 	
 	// ✅ 제보 신청 내역(첨부 이미지) 저장 
 	@PostMapping("/upload/{reportId}")
@@ -80,6 +100,8 @@ public class ReportController {
 	    @RequestParam(required = false) String endDate,
 	    @RequestParam(required = false) String keyword,
 	    @PageableDefault(size = 10) Pageable pageable) {
+		
+		String userId = "test1234"; // 🌟🌟 하드코딩함
 
 	    Page<ReportDto> page = reportService.getAllReports(
 	        carNumber, location, 
@@ -92,16 +114,23 @@ public class ReportController {
 	
 	
 	// ✅ 내 신고글 목록 조회하기 
-	 @GetMapping("/my")
+	/* @GetMapping("/my")
 	    public ResponseEntity<List<ReportDto>> getMyReports(@AuthenticationPrincipal UserDetails userDetails) {
 	        String userId = userDetails.getUsername();
 	        List<ReportDto> reports = reportService.getMyReports(userId);
 	        return ResponseEntity.ok(reports);
-	    }
-	
+	    }*/
+	///테스트용 ////////////////////////////////
+	@GetMapping("/my")
+	public ResponseEntity<List<ReportDto>> getMyReports() {
+	    String userId = "test1234";  // 하드코딩 userId
+	    List<ReportDto> reports = reportService.getMyReports(userId);
+	    return ResponseEntity.ok(reports);
+	}
+	///////////////////////////////////////////
 	
 	// ✅ 상세 조회 ( 조회수 증가 ) 
-	 @GetMapping("/{id}")
+	 @GetMapping("/detail/{id}")
 	    public ResponseEntity<ReportDto> getDetail(@PathVariable Long id) {
 		    ReportDto report = reportService.getReport(id);
 	        return ResponseEntity.ok(report);
@@ -121,7 +150,8 @@ public class ReportController {
 
 	    // 2. 데이터 수정
 	    report.setTitle(reportDto.getTitle());
-	    report.setUserId(principal.getName());
+	    //report.setUserId(principal.getName());
+	    report.setUserId("test1234"); // 🌟🌟 하드코딩 
 	    report.setViolationType(reportDto.getViolationType());
 	    report.setVehicleNumber(reportDto.getVehicleNumber());
 	    report.setDescription(reportDto.getDescription());
@@ -140,9 +170,23 @@ public class ReportController {
 	 * 제보 신청 내역 삭제
 	 * */
 	@DeleteMapping("/{reportId}")
+	/*
 	public ResponseEntity<?> deleteReport(@PathVariable Long reportId, Principal principal) {
+		String userId = "test1234"; //🌟🌟 하드코딩함
 		reportService.deleteReport(reportId, principal.getName());
 	    return ResponseEntity.ok("제보가 삭제되었습니다.");
+	}*/
+	//🌟🌟🌟🌟🌟 테스트용 
+	
+	public ResponseEntity<?> deleteReport(@PathVariable Long reportId) {
+		String userId = "test1234"; // 테스트용
+		reportService.deleteReport(reportId, userId);
+		return ResponseEntity.ok("제보가 삭제되었습니다.");
 	}
+	///////////////////////
+	
+	
+	
+	
 }
 
