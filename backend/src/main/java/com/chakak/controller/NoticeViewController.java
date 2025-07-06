@@ -2,6 +2,7 @@ package com.chakak.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +14,15 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/admin/notice")
+@PreAuthorize("hasRole('ADMIN')")
+
 public class NoticeViewController {
 
 	private final NoticeService service;
 
 	// 공지사항 목록
-	@GetMapping("/notice/list")
+	@GetMapping("/list")
 	public String noticeList(Model model) {
 		List<Notice> noticeList = service.findAll();
 		model.addAttribute("noticeList", noticeList);
@@ -26,7 +30,7 @@ public class NoticeViewController {
 	}
 
 	// 공지사항 상세보기
-	@GetMapping("/notice/{noticeId}")
+	@GetMapping("/{noticeId}")
 	public String noticeDetail(Model model, @PathVariable Long noticeId) {
 		Notice notice = service.findById(noticeId);
 		model.addAttribute("notice", notice);
@@ -34,7 +38,7 @@ public class NoticeViewController {
 	}
 
 	// 새 글 작성 폼
-	@GetMapping("/notice/new")
+	@GetMapping("/new")
 	public String createNoticeForm(Model model) {
 		model.addAttribute("notice", new Notice()); // 빈 객체 전달
 		model.addAttribute("mode", "create"); // 작성 모드
@@ -42,7 +46,7 @@ public class NoticeViewController {
 	}
 
 	// 기존 글 수정 폼
-	@GetMapping("/notice/{noticeId}/edit")
+	@GetMapping("/{noticeId}/edit")
 	public String editNoticeForm(Model model, @PathVariable Long noticeId) {
 		Notice notice = service.findById(noticeId);
 		model.addAttribute("notice", notice); // 기존 객체 전달

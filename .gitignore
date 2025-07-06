@@ -24,6 +24,8 @@ Thumbs.db
 application.yml
 application.yaml
 application.properties
+/src/main/resources/application.properties
+*.properties
 application-*.yml
 application-*.properties
 

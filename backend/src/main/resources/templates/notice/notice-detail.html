@@ -209,7 +209,7 @@
 			<hr>
 
 			<div class="action-buttons">
-				<a th:href="@{|/notice/${notice.noticeId}/edit|}">수정</a>
+				<a th:href="@{|/admin/notice/${notice.noticeId}/edit|}">수정</a>
 				<button type="button" th:onclick="|deleteNotice(${notice.noticeId})|">삭제</button>
 				<a href="/notice/list" style="background-color: #888;">목록</a>
 			</div>

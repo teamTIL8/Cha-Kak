@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +37,7 @@ import java.io.IOException;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
 
@@ -57,7 +59,7 @@ public class SecurityConfig {
         return new OncePerRequestFilter() {
             @Override
             protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain filterChain) throws ServletException, IOException {
+                    FilterChain filterChain) throws ServletException, IOException {
 
                 String requestURI = request.getRequestURI();
                 log.debug("JWT Filter processing: {}", requestURI);
@@ -80,7 +82,8 @@ public class SecurityConfig {
 
                     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         try {
-                            UserDetailsService userDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
+                            UserDetailsService userDetailsService = applicationContext
+                                    .getBean(CustomUserDetailsService.class);
                             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                             log.debug("Loaded user details: {}", userDetails.getUsername());
 
@@ -117,7 +120,6 @@ public class SecurityConfig {
                     log.debug("Token found in Authorization header");
                     return bearerToken.substring(7);
                 }
-
                 return null;
             }
         };
@@ -133,8 +135,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/mypage", "/edit", "/withdraw").authenticated()
                         .requestMatchers("/api/reports/**", "/api/comments/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -144,9 +145,7 @@ public class SecurityConfig {
                         .deleteCookies("token"));
 
         return http.build();
-        
-      
-     }
-   
-    
+
+    }
+
 }

@@ -16,13 +16,13 @@ import com.chakak.service.CustomUserDetails;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/comments")
 public class CommentController {
 	
 	@Autowired
 	private CommentService commentService;
 	
-	@GetMapping("/users/me/comments")
+	@GetMapping("/users/me")
 	public ResponseEntity<List<CommentDto>> getMyComments(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		String userId = userDetails.getUsername(); 
 		return ResponseEntity.ok(commentService.getMyComment(userId));

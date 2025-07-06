@@ -3,6 +3,8 @@ package com.chakak.controller;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +30,7 @@ public class AdminStatisticsRestController {
     // 히트맵/마커용 좌표 리스트
     @GetMapping("/map")
     public List<ReportCoordinateDto> getAllCoordinates() {
-    	
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return statisticsService.getAllReportCoordinates();
     }
     
