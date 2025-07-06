@@ -53,7 +53,9 @@ public class ReactionController {
 	
 
 	// 좋아요 또는 싫어요 등록 / 취소 (toggle)
-	@PostMapping("/reactions/{reportId}")
+	//지금 밑에 이 부분은 auth 인증 받아서 할 때 사용하는 거임
+	 /*@PostMapping("/reactions/{reportId}")
+	 
 	 public ResponseEntity<String> toggleReaction(
 	            @PathVariable Long reportId,
 	            @RequestParam String reactionType,
@@ -68,7 +70,21 @@ public class ReactionController {
 
 	        reactionService.toggleReaction(reportId, user, reactionType);
 	        return ResponseEntity.ok("반응이 처리되었습니다.");
-	    }
+	    }*/
+	
+	////🌟🌟🌟🌟🌟🌟 테스트용
+	@PostMapping("/reactions/{reportId}")
+	public ResponseEntity<String> toggleReaction(
+	        @PathVariable Long reportId,
+	        @RequestParam String reactionType) {
+
+	    User user = new User();
+	    user.setUserId("test1234");  // 하드코딩 userId
+
+	    reactionService.toggleReaction(reportId, user, reactionType);
+	    return ResponseEntity.ok("반응이 처리되었습니다.");
+	}
+    /////////////////////
 	
 	//좋아요 또는 싫어요 개수 
 	 @GetMapping("/reactions/{reportId}/count")
