@@ -41,3 +41,5 @@ application-*.properties
 *.swp
 *.bak
 *.tmp
+
+backend/src/main/resources/application.properties
