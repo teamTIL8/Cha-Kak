@@ -30,9 +30,12 @@ public class ReactionService {
 	
 	
 	public List<ReportDto> getReactionsByType(String userId , String reactionType) {
-		List<Reaction> reactions = reactionRepository.findByUser_UserIdAndReactionType(userId, reactionType);
+		List<Reaction> reactions = reactionRepository.findByUser_UserIdAndReactionType(userId, reactionType.toUpperCase());
 		return reactions.stream().map(reaction-> ReportDto.fromEntity(reaction.getReport())).collect(Collectors.toList());
 	}
+	
+	
+	
 	
 	@Transactional 
 	public void toggleReaction ( Long reportId , User user , String reactionType) {

@@ -16,11 +16,13 @@ public class ReportCommentResponse {
 	private String userId;
 	private String content;
 	private LocalDateTime createdAt;
+	private Long reportId;
 	
 	public ReportCommentResponse (Comment comment) {
 		this.commentId = comment.getCommentId();
 		this.userId = comment.getUser() != null ? comment.getUser().getUserId() : null;
 		this.content = comment.getContent();
 		this.createdAt = comment.getCreatedAt();
+		this.reportId = comment.getReport() != null ? comment.getReport().getReportId() : null;
 	}
 }

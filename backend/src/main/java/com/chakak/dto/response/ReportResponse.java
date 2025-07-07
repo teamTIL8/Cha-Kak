@@ -16,6 +16,8 @@ public class ReportResponse {
 	private String userId;
 	private String vehicleNumber;
 	private LocalDateTime reportTime;
+	private Long viewCount;
+
 	
 	private Violation violationType;
 	private String address; //지도상 주소
