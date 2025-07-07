@@ -64,6 +64,11 @@
                 <p>로그인 상태입니다!<br>마이페이지에서 회원정보를 관리하실 수 있습니다.</p>
                 
                 <div class="button-container">
+				    <!-- 회원과 관리자 모두 -->
+					<a class="button success" th:href="@{/report/list}">제보 목록 조회</a>
+
+				    <!-- 관리자만 -->
+				    <a class="button warning" sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}">관리자 페이지</a>
                     <a class="button success" th:href="@{/mypage}">마이페이지 가기</a>
                     <form style="display: inline;" th:action="@{/logout}" method="post">
                         <button type="submit" class="button secondary">로그아웃</button>
