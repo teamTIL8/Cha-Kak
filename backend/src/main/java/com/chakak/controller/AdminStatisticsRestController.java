@@ -34,6 +34,7 @@ public class AdminStatisticsRestController {
         return statisticsService.getAllReportCoordinates();
     }
     
+    // 제보 유형
     @GetMapping("/by-type")
     public List<ReportResponse> getReportsByViolationType(@RequestParam Violation violationType) {
         return statisticsService.getReportsByViolationType(violationType).stream()

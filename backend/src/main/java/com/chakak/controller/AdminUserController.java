@@ -33,7 +33,7 @@ public class AdminUserController {
     }
     
     /**
-     * 특정 사용자 신고글 목록 조회 (관리자 제외)
+     * 특정 사용자 제보글 목록 조회 (관리자 제외)
      */
     @GetMapping("/{userId}/reports")
     public String userReports(@PathVariable String userId, Model model) {
