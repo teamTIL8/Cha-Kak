@@ -169,20 +169,6 @@
 					alert("오류 발생: " + err.message);
 				});
 		}
-
-		window.addEventListener("DOMContentLoaded", () => {
-
-			const noticeId = /*[[${notice.noticeId}]]*/ 0;
-			const viewCountEl = document.getElementById("viewCount");
-			const originalCount = parseInt(viewCountEl.textContent);
-			viewCountEl.textContent = originalCount + 1;
-
-			fetch(`/admin/api/notice/${noticeId}/view`, {
-				method: 'PUT'
-			}).catch(err => {
-				console.error("조회수 증가 실패:", err);
-			});
-		});
 	</script>
 </head>
 

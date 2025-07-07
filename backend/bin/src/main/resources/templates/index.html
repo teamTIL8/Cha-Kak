@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chakak - 홈</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">🏠 Chakak</a>
+
+            <div class="navbar-nav">
+                <!-- 로그인되지 않은 경우 -->
+                <div th:if="${!isLoggedIn}" style="display: flex; gap: 10px;">
+                    <a class="btn outline" th:href="@{/login}">로그인</a>
+                    <a class="btn primary" th:href="@{/register}">회원가입</a>
+                </div>
+
+                <!-- 로그인된 경우 -->
+                <div th:if="${isLoggedIn}" style="display: flex; align-items: center; gap: 15px;">
+                    <span class="navbar-text">안녕하세요, <strong th:text="${user.name}"></strong>님!</span>
+                    <a class="btn outline" th:href="@{/mypage}">마이페이지</a>
+                    <form style="display: inline;" th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn secondary">로그아웃</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="container container-wide">
+        <!-- 탈퇴 완료 메시지 -->
+        <div th:if="${message}" class="success-message">
+            <span th:text="${message}"></span>
+        </div>
+        
+        <!-- 에러 메시지 -->
+        <div th:if="${error}" class="error-message">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- 히어로 섹션 -->
+        <div class="hero-section">
+            <h1>Chakak에 오신 걸 환영합니다!</h1>
+            
+            <!-- 로그인되지 않은 경우 -->
+            <div th:if="${!isLoggedIn}">
+                <p><br>지금 가입하고 다양한 서비스를 이용해보세요!</p>
+                
+                <div class="button-container">
+                    <a class="button success" th:href="@{/register}">회원가입하기</a>
+                    <a class="button outline" th:href="@{/login}">로그인하기</a>
+                </div>
+            </div>
+
+            <!-- 로그인된 경우 -->
+            <div th:if="${isLoggedIn}">
+                <p>로그인 상태입니다!<br>마이페이지에서 회원정보를 관리하실 수 있습니다.</p>
+                
+                <div class="button-container">
+                    <a class="button success" th:href="@{/mypage}">마이페이지 가기</a>
+                    <form style="display: inline;" th:action="@{/logout}" method="post">
+                        <button type="submit" class="button secondary">로그아웃</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <p>&copy; 2025 Chakak. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
