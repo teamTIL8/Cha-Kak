@@ -77,47 +77,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		return null;
 	}
-		////////////
-		/*final String token = getTokenFromRequest(request);
-
-	  
-		if (token != null && jwtUtil.validateToken(token)) {
-			String username = jwtUtil.extractUsername(token);
-
-			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				try {
-					UserDetails userDetails = authService.loadUserByUsername(username);
-
-					if (jwtUtil.validateToken(token, userDetails)) {
-						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-								userDetails, null, userDetails.getAuthorities());
-						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-						SecurityContextHolder.getContext().setAuthentication(authToken);
-					}
-				} catch (Exception e) {
-					log.error("JWT authentication error: ", e);
-				}
-			}
-		}
-
-		filterChain.doFilter(request, response);
-	}
-
-	private String getTokenFromRequest(HttpServletRequest request) {
-		if (request.getCookies() != null) {
-			for (Cookie cookie : request.getCookies()) {
-				if ("token".equals(cookie.getName())) {
-					return cookie.getValue();
-				}
-			}
-		}
-
-		String bearerToken = request.getHeader("Authorization");
-		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7);
-		}
-
-		return null;
-	}*/
-	
+		
 }
