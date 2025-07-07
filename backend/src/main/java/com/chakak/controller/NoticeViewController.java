@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import com.chakak.domain.Notice;
 import com.chakak.service.NoticeService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -30,7 +33,19 @@ public class NoticeViewController {
 
 	// 공지사항 상세보기
 	@GetMapping("/{noticeId}")
-	public String noticeDetail(Model model, @PathVariable Long noticeId) {
+	public String noticeDetail(Model model, @PathVariable Long noticeId, HttpServletResponse response,
+			@CookieValue(value = "viewedNotices", defaultValue = "") String viewed) {
+
+		// 쿠키 검사
+		String token = "[" + noticeId + "]";
+		if (!viewed.contains(token)) {
+			service.incrementViewCount(noticeId);
+			Cookie cookie = new Cookie("viewedNotices", viewed + token);
+			cookie.setMaxAge(60 * 60);
+			cookie.setPath("/");
+			response.addCookie(cookie);
+		}
+
 		Notice notice = service.findById(noticeId);
 		model.addAttribute("notice", notice);
 		return "notice/notice-detail";
