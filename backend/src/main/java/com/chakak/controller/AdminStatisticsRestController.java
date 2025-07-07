@@ -43,6 +43,7 @@ public class AdminStatisticsRestController {
                         r.getUserId(),
                         r.getVehicleNumber(),
                         r.getReportTime(),
+                        r.getViewCount(),
                         r.getViolationType(),
                         r.getAddress(),
                         r.getLatitude(),

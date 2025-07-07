@@ -48,7 +48,7 @@ public class AuthController {
             cookie.setMaxAge(AuthConstants.TOKEN_COOKIE_MAX_AGE);
             response.addCookie(cookie);
 
-            return AuthConstants.REDIRECT_MYPAGE;
+            return AuthConstants.REDIRECT_MYPAGE; 
 
         } catch (BadCredentialsException e) {
             log.warn("Login failed for user: {}", loginDto.getUserId());
