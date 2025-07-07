@@ -41,10 +41,11 @@ public class ReportCommentController {
 	 */
 	@GetMapping("/users/me")
 	public ResponseEntity<List<CommentDto>> getMyComments(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		//String userId = userDetails.getUsername(); 
-		
-		
-		String userId = "test1234";
+		 if (userDetails == null) {
+	            return ResponseEntity.status(401).build();
+	        }
+
+	        String userId = userDetails.getUsername();
 		return ResponseEntity.ok(commentService.getMyComment(userId));
 	}
 
@@ -54,17 +55,15 @@ public class ReportCommentController {
 	 * 제보 댓글 저장
 	 * */
 	@PostMapping
-	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
+	public ResponseEntity<?> saveReportComment(@RequestBody ReportCommentRequest commentDto, @AuthenticationPrincipal CustomUserDetails userDetails){
+		 if (userDetails == null) {
+	            return ResponseEntity.status(401).body("인증이 필요합니다.");
+	        }
 		Comment comment = new Comment();
-		User user = new User();
-		///user.setUserId(principal.getName());
-		
-		//🌟🌟🌟 하드코딩 //////
-		user.setUserId("test1234"); // ✅ 하드코딩된 사용자 ID
-		comment.setUser(user);   
-		
-		/////////////////
-		comment.setContent(commentDto.getContent());
+		 User user = new User();
+	     user.setUserId(userDetails.getUsername());
+	     comment.setUser(user);
+	     comment.setContent(commentDto.getContent());
 		
 		Comment savedComment = service.save(comment, commentDto.getReportId());
 		List<ReportCommentResponse> commentList = service.findByReportId(commentDto.getReportId());
@@ -75,17 +74,18 @@ public class ReportCommentController {
 	 * 제보 댓글 수정
 	 * */
 	@PutMapping
-	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto, Principal principal){
-		Comment comment = new Comment();
-		User user = new User();
-		//user.setUserId(principal.getName());
-		
-		
-		///🌟🌟🌟 테스트용 하드코딩
-		user.setUserId("test1234");
+	public ResponseEntity<?> updateReportComment(@RequestBody ReportCommentRequest commentDto,  @AuthenticationPrincipal CustomUserDetails userDetails){
+
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("인증이 필요합니다.");
+        }
+
+        Comment comment = new Comment();
+        User user = new User();
+        user.setUserId(userDetails.getUsername());
         comment.setUser(user);
         comment.setCommentId(commentDto.getCommentId());
-		comment.setContent(commentDto.getContent());
+        comment.setContent(commentDto.getContent());
 
 		Comment updatedComment = service.update(comment, commentDto.getReportId());
 		

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -26,23 +27,60 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+	        throws ServletException, IOException {
+	    String token = getTokenFromRequest(request);
+	    log.debug("[JWT Filter] Token extracted: {}", token != null ? "Yes" : "No");
 
-		String requestURI = request.getRequestURI();
-		log.debug("JWT Filter processing: {}", requestURI);
+	    if (token != null) {
+	        try {
+	            String username = jwtUtil.extractUsername(token);
+	            log.debug("[JWT Filter] Username from token: {}", username);
 
-		// 정적 리소스 및 로그인/회원가입은 JWT 검증 스킵
-		if (requestURI.equals("/") || requestURI.equals("/login") || requestURI.equals("/register")
-				|| requestURI.equals("/check-userid") || requestURI.equals("/check-email")
-				|| requestURI.startsWith("/css/") || requestURI.startsWith("/js/") || requestURI.startsWith("/images/")
-				|| requestURI.equals("/favicon.ico")) {
-			log.debug("Skipping JWT validation for: {}", requestURI);
-			filterChain.doFilter(request, response);
-			return;
+	            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+	                UserDetails userDetails = authService.loadUserByUsername(username);
+	                log.debug("[JWT Filter] UserDetails loaded: {}", userDetails != null ? "Yes" : "No");
+
+	                if (jwtUtil.validateToken(token, userDetails)) {
+	                    UsernamePasswordAuthenticationToken authToken =
+	                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+	                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+	                    SecurityContextHolder.getContext().setAuthentication(authToken);
+	                    log.debug("[JWT Filter] Authentication successful for user: {}", username);
+	                } else {
+	                    log.warn("[JWT Filter] Token validation failed");
+	                }
+	            }
+	        } catch (Exception e) {
+	            log.error("[JWT Filter] Error during authentication", e);
+	        }
+	    } else {
+	        log.debug("[JWT Filter] No token found in request");
+	    }
+	    filterChain.doFilter(request, response);
+	}
+
+	private String getTokenFromRequest(HttpServletRequest request) {
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("token".equals(cookie.getName())) {
+				    log.debug("Found JWT token in cookie."); //
+					return cookie.getValue();
+				}
+			}
 		}
 
-		final String token = getTokenFromRequest(request);
+		String bearerToken = request.getHeader("Authorization");
+		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+		    log.debug("Found JWT token in Authorization header."); //
+			return bearerToken.substring(7);
+		}
 
+		return null;
+	}
+		////////////
+		/*final String token = getTokenFromRequest(request);
+
+	  
 		if (token != null && jwtUtil.validateToken(token)) {
 			String username = jwtUtil.extractUsername(token);
 
@@ -62,21 +100,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 		}
 
-		//// ✅ 테스트용 test1234 인증 (JWT 없을 때)
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			try {
-				UserDetails testUser = authService.loadUserByUsername("test1234");
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-						testUser, null, testUser.getAuthorities());
-				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authToken);
-				log.warn("✅ test1234 유저로 테스트 인증 처리됨 (JWT 없음)");
-			} catch (Exception e) {
-				log.error("❌ test1234 사용자 인증 실패", e);
-			}
-		}
-		/////////////////////////////////////
-
 		filterChain.doFilter(request, response);
 	}
 
@@ -95,5 +118,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		return null;
-	}
+	}*/
+	
 }
