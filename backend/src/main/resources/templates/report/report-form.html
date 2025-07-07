@@ -14,6 +14,7 @@
 		#map{margin-top: 10px;margin-bottom: 40px;}
 		#description{width:300px;height:100px;}
 	</style>
+	<link rel="stylesheet" href="/css/report-style.css">
 	
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=29e2323817a7ca27a52dfbad0ed70431&libraries=services,clusterer,drawing"></script>
@@ -39,52 +40,67 @@
 			</div>
 		</div>
 		<div class="content">
-			<form id="reportForm">
-				<h1>
-					<b>제보하기</b>
-				</h1>
-				<h5>불법 주정차 차량의 정보를 입력해주세요.</h5>
-				
-				<hr>
-				
-				<h5>제목</h5>
-				<input type="text" id="title" name="title"/>
-				
-				<h5>위반 유형</h5>
-				<select id="violationType" name="violationType">
-					<option value="" selected>선택</option>
-					<option 
-					       th:each="type : ${violationTypeList}" 
-					       th:value="${type.name}" 
-					       th:text="${type.label}">
-					</option>
-				</select>
-				
-				<h5>차량 번호</h5>
-				<input type="text" id="vehicleNumber" name="vehicleNumber" />
-				
-				<h5>상세 제보 내용</h5>
-				<textarea id="description" name="description"></textarea>
-				
-				<h5>위반 지역</h5>
-				<input type="text" id="address" name="address" />
-				<button type="button" id="submit" onclick="searchAddress();">검색</button>
-				<input type="hidden" id="latitude" name="latitude" /> <!-- 위도 -->
-				<input type="hidden" id="longitude" name="longitude" /> <!-- 경도 -->
-				
-				<!-- 지도-->
-				<div id="map" style="width:800px;height:600px;"></div>
-				
-				<h5>위반 사진</h5>
-				<input type="file" id="vaildImage" name="vaildImage" accept="image/*" multiple />
-				<div class="preview" id="previewContainer"></div>
-				
-				<div class="request-area" style="margin-top:40px;margin-bottom:40px;">
-					<button id="request-btn" type="button" style="width:200px;" onclick="sumitReport();">제보하기</button>
-				</div>
-			</div>
-			<div class="clear"></div>
-		</form>
+	        <h1><b>제보하기</b></h1>
+	        <h5>불법 주정차 차량의 정보를 입력해주세요.</h5>
+	        <hr>
+
+	        <!-- 입력 폼 그룹 시작 -->
+	        <div class="search-form-container">
+
+	            <div class="search-form-group">
+	                <label for="title">제목</label>
+	                <input type="text" id="title" name="title"/>
+	            </div>
+
+	            <div class="search-form-group">
+	                <label for="violationType">위반 유형</label>
+	                <select id="violationType" name="violationType">
+	                    <option value="" selected>선택</option>
+	                    <option th:each="type : ${violationTypeList}" th:value="${type.name}" th:text="${type.label}"></option>
+	                </select>
+	            </div>
+
+	            <div class="search-form-group">
+	                <label for="vehicleNumber">차량 번호</label>
+	                <input type="text" id="vehicleNumber" name="vehicleNumber" />
+	            </div>
+
+	            <div class="search-form-group" style="flex-basis: 100%;">
+	                <label for="description">상세 제보 내용</label>
+	                <textarea id="description" name="description" rows="5" style="padding:10px; border:1px solid #ccc; border-radius:5px; resize: vertical; width:100%;"></textarea>
+	            </div>
+
+	            <div class="search-form-group" style="flex-grow:2;">
+	                <label for="address">위반 지역</label>
+	                <input type="text" id="address" name="address" />
+	            </div>
+
+	            <div class="search-form-actions">
+	                <button type="button" id="submit" onclick="searchAddress();">주소 검색</button>
+	            </div>
+
+	            <input type="hidden" id="latitude" name="latitude" />
+	            <input type="hidden" id="longitude" name="longitude" />
+	        </div>
+	        <!-- 입력 폼 그룹 끝 -->
+
+	        <!-- 지도 영역 -->
+	        <div id="map" style="width:800px;height:600px;margin-bottom:30px;"></div>
+
+	        <!-- 파일 업로드 -->
+	        <div class="search-form-container">
+	            <div class="search-form-group" style="flex-basis:100%;">
+	                <label for="vaildImage">위반 사진</label>
+	                <input type="file" id="vaildImage" name="vaildImage" accept="image/*" multiple />
+	            </div>
+	        </div>
+	        <div class="preview" id="previewContainer" style="margin-bottom:30px;"></div>
+
+	        <!-- 버튼 -->
+	        <div class="search-form-actions" style="justify-content: center; margin-top:30px;">
+	            <button id="request-btn" type="button" onclick="sumitReport();">제보하기</button>
+	        </div>
+		</div>
 	</div>
 </body>
 <script>
@@ -188,7 +204,6 @@
 	
 	//제보하기
 	async function sumitReport() { 
-
 		if(!validateRequest()){
 			return false;
 		}
@@ -207,10 +222,11 @@
 	    const response = await fetch('/api/reports', {
 	        method: 'POST',
 	        headers: { 'Content-Type': 'application/json' },
-	        body: JSON.stringify(data)
+	        body: JSON.stringify(data),
+			credentials: 'include' // 쿠키 포함 (token)
 	    });
-
-	    const reportId = await response.json();
+	    
+		const reportId = await response.json();
 
 		// 2. 파일 업로드
 		const filesInput = document.getElementById('vaildImage');
@@ -219,10 +235,11 @@
 	    for (let file of filesInput.files) {
 	        formData.append('files', file);
 	    }
-
+		console.log("파일 업로드 ");
 	    await fetch('/api/reports/upload/' + reportId, {
 	        method: 'POST',
-	        body: formData
+	        body: formData,
+			credentials: 'include' // 쿠키 포함 (token)
 	    });
 
 	    alert('제보가 완료되었습니다.');

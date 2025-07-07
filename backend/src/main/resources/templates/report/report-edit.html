@@ -15,6 +15,7 @@
 		#description{width:300px;height:100px;}
 		.container{margin-bottom:10px;}
 	</style>
+	<link rel="stylesheet" href="/css/report-style.css">
 	
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=29e2323817a7ca27a52dfbad0ed70431&libraries=services,clusterer,drawing"></script>
@@ -39,56 +40,80 @@
 			</div>
 		</div>
 		<div class="content">
-			<!-- 수정할 때는 반드시 PUT 또는 POST 사용 -->
-			<form th:action="@{/report/update}" method="post" enctype="multipart/form-data">
-				<input type="hidden" name="reportId" th:value="${report.reportId}" />
-				<h1>
-					<b>제보 수정 하기</b>
-				</h1>
-				<h5>불법 주정차 제보 정보 수정</h5>
-				
-				<hr>
-				
-				<h5>제목</h5>
-				<input type="text" id="title" name="title" th:value="${report.title}" />
-				
-				<h5>위반 유형</h5>
-				<select id="violationType" name="violationType">
-					<option 
-					       th:each="type : ${violationTypeList}" 
-					       th:value="${type.name}" 
-					       th:text="${type.label}"
-						   th:selected="${report.violationType == type.name}">
-					</option>
-				</select>
-				
-				<h5>차량 번호</h5>
-				<input type="text" id="vehicleNumber" name="vehicleNumber" th:value="${report.vehicleNumber}"/>
-								
-				<h5>상세 신고 내용</h5>
-				<textarea id="description" name="description" th:text="${report.description}"></textarea>
-				
-				<h5>위반 지역</h5>
-				<input type="text" id="address" name="address" th:value="${report.address}"/>
-				<button type="button" id="submit" onclick="searchAddress();">검색</button>
-				<input type="hidden" id="latitude" name="latitude" th:value="${report.latitude}" /> <!-- 위도 -->
-				<input type="hidden" id="longitude" name="longitude" th:value="${report.longitude}" /> <!-- 경도 -->
-				
-				<!-- 지도-->
-				<div id="map" style="width:800px;height:600px;"></div>
-				
-				<h5>위반 사진</h5>
-				<input type="file" id="vaildImage" name="vaildImage" accept="image/*" multiple />
-				<div class="preview" id="previewContainer">
-					<div th:each="image : ${reportImages}" style="margin-top: 10px;">
-						<img th:src="@{'/images/' + ${image.imgPath}}" style="width: 200px; height: auto; margin-right: 10px;" />
-					</div>
-				</div>
-				
-				<button id="edit-btn" type="button" style="width:200px;" onclick="editReport();">수정하기</button>
-			</form>
+		    <form th:action="@{/report/update}" method="post" enctype="multipart/form-data">
+		        <input type="hidden" name="reportId" th:value="${report.reportId}" />
+
+		        <h1><b>제보 수정 하기</b></h1>
+		        <h5>불법 주정차 제보 정보 수정</h5>
+		        <hr>
+
+		        <!-- 입력 폼 그룹 -->
+		        <div class="search-form-container">
+
+		            <div class="search-form-group">
+		                <label for="title">제목</label>
+		                <input type="text" id="title" name="title" th:value="${report.title}" />
+		            </div>
+
+		            <div class="search-form-group">
+		                <label for="violationType">위반 유형</label>
+		                <select id="violationType" name="violationType">
+		                    <option th:each="type : ${violationTypeList}"
+		                            th:value="${type.name}"
+		                            th:text="${type.label}"
+		                            th:selected="${report.violationType == type.name}">
+		                    </option>
+		                </select>
+		            </div>
+
+		            <div class="search-form-group">
+		                <label for="vehicleNumber">차량 번호</label>
+		                <input type="text" id="vehicleNumber" name="vehicleNumber" th:value="${report.vehicleNumber}" />
+		            </div>
+
+		            <div class="search-form-group" style="flex-basis: 100%;">
+		                <label for="description">상세 신고 내용</label>
+		                <textarea id="description" name="description" rows="5" style="padding:10px; border:1px solid #ccc; border-radius:5px; resize: vertical; width:100%;"
+		                          th:text="${report.description}"></textarea>
+		            </div>
+
+		            <div class="search-form-group" style="flex-grow:2;">
+		                <label for="address">위반 지역</label>
+		                <input type="text" id="address" name="address" th:value="${report.address}" />
+		            </div>
+
+		            <div class="search-form-actions">
+		                <button type="button" id="submit" onclick="searchAddress();">주소 검색</button>
+		            </div>
+
+		            <input type="hidden" id="latitude" name="latitude" th:value="${report.latitude}" />
+		            <input type="hidden" id="longitude" name="longitude" th:value="${report.longitude}" />
+		        </div>
+
+		        <!-- 지도 -->
+		        <div id="map" style="width:800px;height:600px;margin-bottom:30px;"></div>
+
+		        <!-- 사진 수정 영역 -->
+		        <div class="search-form-container">
+		            <div class="search-form-group" style="flex-basis:100%;">
+		                <label for="vaildImage">위반 사진</label>
+		                <input type="file" id="vaildImage" name="vaildImage" accept="image/*" multiple />
+		            </div>
+		        </div>
+
+		        <!-- 기존 사진 미리보기 -->
+		        <div class="preview" id="previewContainer" style="margin-bottom:30px;">
+		            <div th:each="image : ${reportImages}" style="margin-top: 10px;">
+		                <img th:src="@{'/images/' + ${image.imgPath}}" style="width: 200px; height: auto; margin-right: 10px;" />
+		            </div>
+		        </div>
+
+		        <!-- 수정 버튼 -->
+		        <div class="search-form-actions" style="justify-content: center; margin-top:30px;">
+		            <button id="edit-btn" type="button" onclick="editReport();">수정하기</button>
+		        </div>
+		    </form>
 		</div>
-		<div class="clear"></div>
 	</div>
 </body>
 <script th:inline="javascript">

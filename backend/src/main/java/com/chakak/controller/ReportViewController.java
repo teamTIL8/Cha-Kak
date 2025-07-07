@@ -21,11 +21,13 @@ import com.chakak.dto.response.ReportResponse;
 import com.chakak.service.ReportCommentService;
 import com.chakak.service.ReportService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('USER')")
 public class ReportViewController {
 	
 	private final ReportService service;
@@ -114,7 +116,7 @@ public class ReportViewController {
 	/**
 	 * 불법 주정차 제보 상세 화면 이동
 	 * */
-	@GetMapping("/report/{reportId}")
+	@GetMapping("/report/detail/{reportId}")
 	public String detailReport(Model model, @PathVariable Long reportId, Principal principal) {
 		Report report = service.findById(reportId);
 		
@@ -134,6 +136,7 @@ public class ReportViewController {
 		
 		// 댓글 조회
 		List<ReportCommentResponse> comments = commentSerivce.findByReportId(reportId);
+		String currentuserId = principal.getName();
 		
 		model.addAttribute("report", reportResponse);
 		model.addAttribute("reportImages", reportImages);

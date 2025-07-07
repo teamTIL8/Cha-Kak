@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,6 +37,7 @@ public class ReportCommentController {
 		Comment comment = new Comment();
 		User user = new User();
 		user.setUserId(principal.getName());
+		comment.setUser(user);
 		comment.setContent(commentDto.getContent());
 		
 		Comment savedComment = service.save(comment, commentDto.getReportId());
@@ -51,6 +53,8 @@ public class ReportCommentController {
 		Comment comment = new Comment();
 		User user = new User();
 		user.setUserId(principal.getName());
+		
+		comment.setUser(user);
 		comment.setCommentId(commentDto.getCommentId());
 		comment.setContent(commentDto.getContent());
 

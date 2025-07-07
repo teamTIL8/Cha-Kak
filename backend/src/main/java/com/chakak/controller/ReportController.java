@@ -2,11 +2,13 @@ package com.chakak.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,14 +31,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/report")
 public class ReportController {
 	
 	private final ReportService reportService;
 	private final ReportImageService reportImageService;
 	
 	// ✅ 제보 신청 내역 저장 
-	@PostMapping
+	@PostMapping("/api/reports")
 	public ResponseEntity<?> saveReport(@RequestBody ReportRequest reportDto, Principal principal){
 		String userId = principal.getName(); 
 		
@@ -52,11 +53,12 @@ public class ReportController {
 		
 		Report savedReport = reportService.save(report);
 		return ResponseEntity.ok(savedReport.getReportId());
+
 	}
 	
 	
 	// ✅ 제보 신청 내역(첨부 이미지) 저장 
-	@PostMapping("/upload/{reportId}")
+	@PostMapping("/api/reports/upload/{reportId}")
     public ResponseEntity<?> uploadFiles(@PathVariable Long reportId,
                                          @RequestParam("files") List<MultipartFile> files) {
 
@@ -69,7 +71,7 @@ public class ReportController {
 	
 	
 	// ✅ 전체 신고 목록 조회 or 필터링 조회 ( 차량 번호 , 위치 , 상태 , 글 쓴 날짜 , 기간 ( startDate , endDate) , 키워드 )
-	@GetMapping
+	@GetMapping("/report")
 	public ResponseEntity<Page<ReportDto>> getAllReports(
 			// required = false는 뒤에 쿼리 파라미터가 안 붙이면 전체 목록 조회 , 붙이면 해당 파라미터 조회를 의미하는 것임
 	    @RequestParam(required = false) String carNumber, // RequestParam 이므로 ?로 붙이는 쿼리 파라미터임 
@@ -92,7 +94,7 @@ public class ReportController {
 	
 	
 	// ✅ 내 신고글 목록 조회하기 
-	 @GetMapping("/my")
+	 @GetMapping("/report/my")
 	    public ResponseEntity<List<ReportDto>> getMyReports(@AuthenticationPrincipal UserDetails userDetails) {
 	        String userId = userDetails.getUsername();
 	        List<ReportDto> reports = reportService.getMyReports(userId);
@@ -101,7 +103,7 @@ public class ReportController {
 	
 	
 	// ✅ 상세 조회 ( 조회수 증가 ) 
-	 @GetMapping("/{id}")
+	 @GetMapping("/report/{id}")
 	    public ResponseEntity<ReportDto> getDetail(@PathVariable Long id) {
 		    ReportDto report = reportService.getReport(id);
 	        return ResponseEntity.ok(report);
@@ -111,7 +113,7 @@ public class ReportController {
 	
 	  // ✅ 제보 신청 내역 수정
 	
-	@PutMapping("/{reportId}")
+	@PutMapping("/api/reports/{reportId}")
 	public ResponseEntity<?> updateReport(@PathVariable Long reportId, @RequestBody ReportRequest reportDto, Principal principal) {
 	    // 1. 수정할 대상 조회
 	    Report report = reportService.findById(reportId);
@@ -139,7 +141,7 @@ public class ReportController {
 	/**
 	 * 제보 신청 내역 삭제
 	 * */
-	@DeleteMapping("/{reportId}")
+	@DeleteMapping("/api/reports/{reportId}")
 	public ResponseEntity<?> deleteReport(@PathVariable Long reportId, Principal principal) {
 		reportService.deleteReport(reportId, principal.getName());
 	    return ResponseEntity.ok("제보가 삭제되었습니다.");
