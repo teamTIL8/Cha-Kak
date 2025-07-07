@@ -2,6 +2,10 @@ package com.chakak.controller;
 
 import com.chakak.common.constants.AuthConstants;
 import com.chakak.dto.request.UserRegisterDto;
+import com.chakak.exception.DuplicateEmailException;
+import com.chakak.exception.DuplicateUserIdException;
+import com.chakak.exception.WithdrawnEmailException;
+import com.chakak.exception.DuplicateEntryException;
 import com.chakak.service.UserRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +46,25 @@ public class UserController {
             redirectAttributes.addFlashAttribute(AuthConstants.ATTR_MESSAGE, AuthConstants.MSG_REGISTRATION_SUCCESS);
             return AuthConstants.REDIRECT_LOGIN;
 
-        } catch (RuntimeException e) {
+        } catch (DuplicateUserIdException e) {
+            log.warn("Registration failed: {}", e.getMessage());
+            bindingResult.rejectValue("userId", "duplicate", e.getMessage());
+            return AuthConstants.VIEW_REGISTER;
+        } catch (DuplicateEmailException e) {
+            log.warn("Registration failed: {}", e.getMessage());
+            bindingResult.rejectValue("email", "duplicate", e.getMessage());
+            return AuthConstants.VIEW_REGISTER;
+        } catch (WithdrawnEmailException e) {
+            log.warn("Registration failed: {}", e.getMessage());
+            bindingResult.rejectValue("email", "duplicate", e.getMessage());
+            return AuthConstants.VIEW_REGISTER;
+        } catch (DuplicateEntryException e) {
             log.warn("Registration failed: {}", e.getMessage());
             bindingResult.reject("register.fail", e.getMessage());
+            return AuthConstants.VIEW_REGISTER;
+        } catch (RuntimeException e) {
+            log.error("Registration error", e);
+            bindingResult.reject("register.fail", "회원가입 중 오류가 발생했습니다.");
             return AuthConstants.VIEW_REGISTER;
         }
     }

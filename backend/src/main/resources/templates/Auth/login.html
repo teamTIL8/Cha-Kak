@@ -32,6 +32,9 @@
 				</div>
 
 				<form th:action="@{/login}" th:object="${loginDto}" method="post" class="form-container">
+					<div class="invalid-feedback" th:if="${#fields.hasErrors('global')}">
+						<p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+					</div>
 					<div class="form-group">
 						<label for="userId">사용자 ID</label>
 						<input type="text"
