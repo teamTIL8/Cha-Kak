@@ -23,7 +23,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 	@Override
 	public List<Notice> findAll() {
-		return noticeRepository.findAll();
+		return noticeRepository.findAllByOrderByCreatedAtDesc();
 	}
 
 	@Override

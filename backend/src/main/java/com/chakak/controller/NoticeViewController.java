@@ -14,8 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin/notice")
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/notice")
 
 public class NoticeViewController {
 
@@ -38,6 +37,7 @@ public class NoticeViewController {
 	}
 
 	// 새 글 작성 폼
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/new")
 	public String createNoticeForm(Model model) {
 		model.addAttribute("notice", new Notice()); // 빈 객체 전달
@@ -46,6 +46,7 @@ public class NoticeViewController {
 	}
 
 	// 기존 글 수정 폼
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{noticeId}/edit")
 	public String editNoticeForm(Model model, @PathVariable Long noticeId) {
 		Notice notice = service.findById(noticeId);
