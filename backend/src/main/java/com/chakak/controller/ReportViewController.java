@@ -108,6 +108,7 @@ public class ReportViewController {
 															 report.getUserId(),
 															 report.getVehicleNumber(),
 															 report.getReportTime(),
+															 report.getViewCount(),
 															 report.getViolationType(),
 															 report.getAddress(),
 															 report.getLatitude(),
@@ -130,14 +131,18 @@ public class ReportViewController {
 	@GetMapping("/report/{reportId}")
 	public String detailReport(Model model, @PathVariable Long reportId, Principal principal) {
 		Report report = service.findById(reportId);
+		 report.setViewCount(report.getViewCount() + 1);
+		    service.save(report);
 		
 		ReportResponse reportResponse = new ReportResponse(report.getReportId(), 
 															 report.getTitle(), 
 															 report.getUserId(),
 															 report.getVehicleNumber(),
 															 report.getReportTime(),
+															 report.getViewCount(),
 															 report.getViolationType(),
 															 report.getAddress(),
+															 
 															 report.getLatitude(),
 															 report.getLongitude(),
 															 report.getDescription());

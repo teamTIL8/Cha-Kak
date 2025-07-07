@@ -203,6 +203,11 @@
 			<span th:text="${report.title}"></span>
 			<br>
 			
+			<h5 style="display: inline;">조회수 : </h5> 
+			<span th:text="${report.viewCount ?: 0}"></span>
+			<br>
+
+			
 			<h5 style="display: inline;">위반 유형 : </h5>
 			<span th:text="${report.violationType}"></span>
 			<br>

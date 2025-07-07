@@ -1,0 +1,97 @@
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>관리자 대시보드</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+  </head>
+  <body>
+      <header>
+        <h1>Chakak 관리자 대시보드</h1>
+        <div class="btn-group">
+          <a th:href="@{/}" class="btn">홈으로</a>
+          <a th:href="@{/admin/notice/list}" class="btn">공지사항 관리</a>
+          <a th:href="@{/admin/users}" class="btn">회원 관리</a>
+        </div>
+      </header>
+
+      <div class="main-container">
+        <section>
+          <div class="section-title">🚘제보 통계 요약</div>
+          <div class="dashboard-grid">
+            <div class="card">
+              <h3>중복 제보 차량 Top 10</h3>
+              <table>
+                <tr><th>순위</th><th>차량 번호</th><th>제보 횟수</th></tr>
+                <tr th:each="v, stat : ${topVehicles}">
+                  <td th:text="${stat.index + 1}">1</td>
+                  <td th:text="${v.vehicleNumber}">12가1234</td>
+                  <td th:text="${v.count}">3</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="card">
+              <h3>제보 유형 분포</h3>
+              <table>
+                <tr><th>유형</th><th>제보 수</th></tr>
+                <tr th:each="t : ${typeStats}">
+                  <td th:text="${t.violationType}">자전거도로</td>
+                  <td th:text="${t.count}">5</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="card">
+              <h3>반복 제보 지역 Top 10</h3>
+              <table>
+                <tr><th>순위</th><th>주소</th><th>제보 수</th></tr>
+                <tr th:each="a, stat : ${locationStats}">
+                  <td th:text="${stat.index + 1}">1</td>
+                  <td th:text="${a.location}">서울시 강남구</td>
+                  <td th:text="${a.count}">7</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-title">🗺지역별 제보 클러스터링 지도</div>
+          <div id="map" class="map-wrapper"></div>
+        </section>
+
+		<section>
+		       <div class="section-title">🚦 제보 유형별 필터</div>
+		       <label for="violationType">신고 유형 선택:</label>
+		       <select id="violationType" name="violationType">
+		         <option value="" selected>선택</option>
+		         <option th:each="type : ${violationTypeList}" th:value="${type.name}" th:text="${type.label}"></option>
+		       </select>
+
+		       <div class="card" style="margin-top: 1rem">
+		         <table id="reportTable">
+		           <thead>
+		             <tr>
+		               <th>신고 번호</th>
+		               <th>제목</th>
+		               <th>위반 유형</th>
+		               <th>위반 지역</th>
+		               <th>위반 일자</th>
+		             </tr>
+		           </thead>
+		           <tbody>
+		             <!-- JS로 렌더링 -->
+		           </tbody>
+		         </table>
+		       </div>
+		     </section>
+		 </div>
+	  
+	  <!-- 푸터 -->
+	  <footer class="footer">
+	      <p>&copy; 2025 Chakak. All rights reserved.</p>
+	  </footer>
+	  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=978b749ade2fb05402a450e0de2bc2a6&autoload=true&libraries=services,clusterer"></script>
+	  <script src="/js/admin-dashboard.js"></script>
+    </body>
+  </html>

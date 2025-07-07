@@ -52,7 +52,7 @@ public class AuthController {
 
         } catch (BadCredentialsException e) {
             log.warn("Login failed for user: {}", loginDto.getUserId());
-            bindingResult.reject("login.fail", e.getMessage());
+            bindingResult.reject("login.fail", AuthConstants.MSG_INVALID_CREDENTIALS);
             return AuthConstants.VIEW_LOGIN;
         } catch (RuntimeException e) {
             log.error("Login error", e);

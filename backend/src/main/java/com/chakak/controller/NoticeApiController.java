@@ -51,11 +51,5 @@ public class NoticeApiController {
 		return ResponseEntity.ok("deleted");
 	}
 
-	@PutMapping("/{noticeId}/view")
-	public ResponseEntity<?> increaseViewCount(@PathVariable Long noticeId) {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		service.incrementViewCount(noticeId);
-		return ResponseEntity.ok().build();
-	}
 
 }
