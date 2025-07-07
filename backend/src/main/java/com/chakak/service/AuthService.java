@@ -1,6 +1,7 @@
 package com.chakak.service;
 
 import com.chakak.dto.request.UserLoginDto;
+import com.chakak.common.constants.AuthConstants;
 import com.chakak.domain.User;
 import com.chakak.repository.UserRepository;
 import com.chakak.util.JwtUtil;
@@ -31,10 +32,10 @@ public class AuthService implements UserDetailsService {
     @Transactional
     public String login(UserLoginDto loginDto) {
         User user = userRepository.findByUserIdAndIsDeletedFalse(loginDto.getUserId())
-                .orElseThrow(() -> new BadCredentialsException("사용자 ID 또는 비밀번호가 올바르지 않습니다."));
+                .orElseThrow(() -> new BadCredentialsException(AuthConstants.MSG_INVALID_CREDENTIALS));
 
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("사용자 ID 또는 비밀번호가 올바르지 않습니다.");
+            throw new BadCredentialsException(AuthConstants.MSG_INVALID_CREDENTIALS);
         }
 
         return jwtUtil.generateToken(user);

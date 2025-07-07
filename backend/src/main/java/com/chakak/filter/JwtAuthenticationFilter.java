@@ -1,6 +1,6 @@
 package com.chakak.filter;
 
-import com.chakak.service.AuthService;
+import com.chakak.service.CustomUserDetailsService;
 import com.chakak.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,35 +8,32 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
-	private final AuthService authService;
+	private final CustomUserDetailsService userDetailsService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
 		String requestURI = request.getRequestURI();
-		log.debug("JWT Filter processing: {}", requestURI);
 
-		// 로그인/회원가입/홈페이지는 JWT 검증 스킵
-		if (requestURI.equals("/") || requestURI.equals("/login") || requestURI.equals("/register")
-				|| requestURI.equals("/check-userid") || requestURI.equals("/check-email")
-				|| requestURI.startsWith("/css/") || requestURI.startsWith("/js/") || requestURI.startsWith("/images/")
-				|| requestURI.equals("/favicon.ico")) {
-			log.debug("Skipping JWT validation for: {}", requestURI);
+		// 정적 리소스와 인증이 필요없는 API만 JWT 검증 스킵
+		if (requestURI.equals("/login") || requestURI.equals("/register") || requestURI.equals("/check-userid")
+				|| requestURI.equals("/check-email") || requestURI.startsWith("/css/") || requestURI.startsWith("/js/")
+				|| requestURI.startsWith("/images/") || requestURI.equals("/favicon.ico")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -48,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				try {
-					UserDetails userDetails = authService.loadUserByUsername(username);
+					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
 					if (jwtUtil.validateToken(token, userDetails)) {
 						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -57,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						SecurityContextHolder.getContext().setAuthentication(authToken);
 					}
 				} catch (Exception e) {
-					log.error("JWT authentication error: ", e);
+					// 인증 실패 시 로그 없이 무시
 				}
 			}
 		}
@@ -66,7 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String getTokenFromRequest(HttpServletRequest request) {
-		// 쿠키에서 토큰 추출
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
 				if ("token".equals(cookie.getName())) {
@@ -75,7 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 		}
 
-		// Authorization 헤더에서 토큰 추출
 		String bearerToken = request.getHeader("Authorization");
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7);
