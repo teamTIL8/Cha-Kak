@@ -10,7 +10,7 @@
 	  <h1>Chakak 관리자 대시보드</h1>
 	  <div class="btn-group">
 	    <a th:href="@{/}" class="btn">홈으로</a>
-	    <a th:href="@{/admin/notice/list}" class="btn">공지사항 관리</a>
+	    <a th:href="@{/notice/list}" class="btn">공지사항 관리</a>
 	    <a th:href="@{/admin/dashboard}" class="btn">대시보드</a>
 	  </div>
 	</header>
@@ -24,10 +24,10 @@
         <div class="user-info">
           <img src="/aimages/profile.jpg" alt="profile" class="profile-img"/>
           <div class="user-details">
-			<div><strong>회원 ID:</strong> <span th:text="${user.userId}">test1234</span></div>
-			<div><strong>이름:</strong> <span th:text="${user.name}">홍길동</span></div>
-			<div><strong>이메일:</strong> <span th:text="${user.email}">test@example.com</span></div>
-			<div><strong>가입일:</strong> <span th:text="${#temporals.format(user.createdAt, 'yyyy-mm-dd HH:mm')}">test@example.com</span></div>
+			<div><strong>회원 ID:</strong> <span th:text="${user.userId}"></span></div>
+			<div><strong>이름:</strong> <span th:text="${user.name}"></span></div>
+			<div><strong>이메일:</strong> <span th:text="${user.email}"></span></div>
+			<div><strong>가입일:</strong> <span th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></span></div>
           </div>
         </div>
 		
