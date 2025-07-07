@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final AuthService authService;
+    
 
     public SecurityConfig(JwtUtil jwtUtil, @Lazy AuthService authService) {
         this.jwtUtil = jwtUtil;
@@ -49,12 +51,23 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/register", "/check-userid", "/check-email", "/css/**",
-                        "/js/**", "/images/**", "/favicon.ico", "/report/my/reports-reaction")
-                .permitAll()
-                .requestMatchers("/mypage", "/edit", "/withdraw").authenticated()
-                .requestMatchers("/report/**", "/comment/**").permitAll()
-                .anyRequest().authenticated()
+            		 // 🔓 공개 접근 허용
+                    .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
+                    .requestMatchers("/report/main", "/report/detail/**").permitAll()  // 목록, 상세 페이지는 공개
+                    .requestMatchers(HttpMethod.GET, "/api/reports/**").permitAll()    // 목록 조회용 API는 공개
+
+                    // 🔒 인증 필요한 API
+                    .requestMatchers("/my/**").authenticated()
+                    .requestMatchers("/report/register", "/report/mypage", "/report/edit/**").authenticated()
+                    .requestMatchers("/api/reactions/**").authenticated()
+                    .requestMatchers("/api/comments/**").authenticated()
+                    .requestMatchers("/api/reports/**").authenticated()
+                    .requestMatchers("/api/reactions/**").authenticated()
+                    .requestMatchers("/api/comments/**").authenticated()
+                    .requestMatchers("/api/reports/**").authenticated()
+                    .requestMatchers("/report/register", "/report/mypage", "/report/edit/**").authenticated()
+
+                    // 🔒 그 외 모든 요청은 인증 필요
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, authService), UsernamePasswordAuthenticationFilter.class)
             .formLogin(AbstractHttpConfigurer::disable)

@@ -17,68 +17,62 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
-@Slf4j
+
+import com.chakak.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j; // ✅ 여기 추가
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Slf4j // ✅ 로그 찍고 싶으면 꼭 있어야 함
+@Component
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final JwtUtil jwtUtil;
-	private final AuthService authService;
+    private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, AuthService authService) {
+        this.jwtUtil = jwtUtil;
+        this.authService = authService;
+    }
 
-		String requestURI = request.getRequestURI();
-		log.debug("JWT Filter processing: {}", requestURI);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-		// 정적 리소스 및 로그인/회원가입은 JWT 검증 스킵
-		if (requestURI.equals("/") || requestURI.equals("/login") || requestURI.equals("/register")
-				|| requestURI.equals("/check-userid") || requestURI.equals("/check-email")
-				|| requestURI.startsWith("/css/") || requestURI.startsWith("/js/") || requestURI.startsWith("/images/")
-				|| requestURI.equals("/favicon.ico")) {
-			log.debug("Skipping JWT validation for: {}", requestURI);
-			filterChain.doFilter(request, response);
-			return;
-		}
+        String token = jwtUtil.resolveToken(request);
 
-		final String token = getTokenFromRequest(request);
+        if (token != null && jwtUtil.validateToken(token)) {
+            try {
+                String username = jwtUtil.getUsernameFromToken(token);
+                UserDetails userDetails = authService.loadUserByUsername(username); // AuthService 사용
 
-		if (token != null && jwtUtil.validateToken(token)) {
-			String username = jwtUtil.extractUsername(token);
+                UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				try {
-					UserDetails userDetails = authService.loadUserByUsername(username);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-					if (jwtUtil.validateToken(token, userDetails)) {
-						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-								userDetails, null, userDetails.getAuthorities());
-						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-						SecurityContextHolder.getContext().setAuthentication(authToken);
-					}
-				} catch (Exception e) {
-					log.error("JWT authentication error: ", e);
-				}
-			}
-		}
+                log.debug("✅ 인증된 사용자: {}", username);
+            } catch (Exception e) {
+                log.error("❌ JWT 인증 과정에서 예외 발생", e);
+            }
+        }
 
-		//// ✅ 테스트용 test1234 인증 (JWT 없을 때)
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			try {
-				UserDetails testUser = authService.loadUserByUsername("test1234");
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-						testUser, null, testUser.getAuthorities());
-				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authToken);
-				log.warn("✅ test1234 유저로 테스트 인증 처리됨 (JWT 없음)");
-			} catch (Exception e) {
-				log.error("❌ test1234 사용자 인증 실패", e);
-			}
-		}
-		/////////////////////////////////////
+        filterChain.doFilter(request, response);
+    }
 
-		filterChain.doFilter(request, response);
-	}
+
 
 	private String getTokenFromRequest(HttpServletRequest request) {
 		if (request.getCookies() != null) {

@@ -28,11 +28,13 @@ public class MyPageViewController {
     private final ReportService reportService;
     
 	// ✅ 내가 쓴 신고글 조회하기 
-	 ///////
-    ///🌟🌟🌟🌟🌟 강제 하드코딩 //////
+	 
     @GetMapping("/reports")
-    public String getMyReports(Model model) {
-        String userId = "test1234"; // 강제로 하드코딩
+    public String getMyReports(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    	if (userDetails == null) {
+            return "redirect:/login"; 
+        }
+        String userId = userDetails.getUsername();
 
         List<ReportDto> myReports = reportService.getMyReports(userId);
         model.addAttribute("myReports", myReports);
@@ -44,7 +46,11 @@ public class MyPageViewController {
 	//✅ 내가 쓴 댓글 조회하기 
 	@GetMapping("/comments")
 	public String getMyComments(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-	    String userId =  "test1234";
+		if (userDetails == null) {
+            return "redirect:/login";
+        }
+        String userId = userDetails.getUsername();
+        
 	    List<CommentDto> myComments = commentService.getMyComment(userId);  // ✅ 실제 존재하는 메서드 사용
 	    model.addAttribute("myComments", myComments);
 	    return "report/my/reports"; 
@@ -52,8 +58,12 @@ public class MyPageViewController {
 	
 	//✅ 내가 누른 반응 조회 ( 좋아요 ) 
 	@GetMapping("/likes")
-	public String getLikedReports(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-        String userId =  "test1234";
+	public String getLikedReports(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+		if (userDetails == null) {
+            return "redirect:/login";
+        }
+        String userId = userDetails.getUsername();
+
         List<ReportDto> likedReports = reactionService.getReactionsByType(userId, "LIKE");
         model.addAttribute("likedReports", likedReports);
         return "report/my/reports-reaction"; 
@@ -61,8 +71,11 @@ public class MyPageViewController {
 
 	// ✅ 내가 누른 반응 조회 ( 싫어요 )
     @GetMapping("/dislikes")
-    public String getDislikedReports(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-        String userId =  "test1234";
+    public String getDislikedReports(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    	if (userDetails == null) {
+            return "redirect:/login";
+        }
+        String userId = userDetails.getUsername();
         List<ReportDto> dislikedReports = reactionService.getReactionsByType(userId, "DISLIKE");
         model.addAttribute("dislikedReports", dislikedReports);
         return "report/my/reports-reaction"; 

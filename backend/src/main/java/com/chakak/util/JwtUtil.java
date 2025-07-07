@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,58 +16,89 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-	@Value("${jwt.secret:mySecretKey}")
-	private String secret;
+    @Value("${jwt.secret:mySecretKey}")
+    private String secret;
 
-	@Value("${jwt.expiration:86400000}") // 24시간
-	private Long expiration;
+    @Value("${jwt.expiration:86400000}") // 24시간
+    private Long expiration;
 
-	private SecretKey getSigningKey() {
-		return Keys.hmacShaKeyFor(secret.getBytes());
-	}
+    // ✅ 서명 키 생성
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
-	public String generateToken(UserDetails userDetails) {
-		Map<String, Object> claims = new HashMap<>();
-		return createToken(claims, userDetails.getUsername());
-	}
+    // ✅ 토큰 생성
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, userDetails.getUsername());
+    }
 
-	private String createToken(Map<String, Object> claims, String subject) {
-		return Jwts.builder().claims(claims).subject(subject).issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + expiration)).signWith(getSigningKey()).compact();
-	}
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
-	public String extractUsername(String token) {
-		return extractClaim(token, Claims::getSubject);
-	}
+    // ✅ 클레임 추출
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
-	public Date extractExpiration(String token) {
-		return extractClaim(token, Claims::getExpiration);
-	}
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 
-	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-		final Claims claims = extractAllClaims(token);
-		return claimsResolver.apply(claims);
-	}
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
-	private Claims extractAllClaims(String token) {
-		return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
-	}
+    private Claims extractAllClaims(String token) {
+        return Jwts
+            .parserBuilder()
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+    }
 
-	private Boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
-	}
 
-	public Boolean validateToken(String token, UserDetails userDetails) {
-		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-	}
+    private Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
 
-	public Boolean validateToken(String token) {
-		try {
-			extractAllClaims(token);
-			return !isTokenExpired(token);
-		} catch (JwtException | IllegalArgumentException e) {
-			return false;
-		}
-	}
+    // ✅ 사용자 일치 및 만료 여부 확인
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    // ✅ 단독 유효성 검사
+    public Boolean validateToken(String token) {
+        try {
+            extractAllClaims(token);
+            return !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    // ✅ [추가] 요청에서 Authorization 헤더에서 Bearer 토큰 추출
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7); // "Bearer " 이후 토큰만 추출
+           
+        }
+        return null;
+    }
+
+    // ✅ [추가] extractUsername() 별칭 제공 (JwtAuthenticationFilter 호환)
+    public String getUsernameFromToken(String token) {
+        return extractUsername(token);
+    }
 }
